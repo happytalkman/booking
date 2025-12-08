@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Ship, Search, Newspaper, ExternalLink, Loader2, Anchor, BarChart2 } from 'lucide-react';
 import { fetchMarketInsights } from '../services/geminiService';
 import { MarketInsight, Language } from '../types';
+import { ProfessionalMarketReport } from '../components/ProfessionalMarketReport';
 
 interface MarketIntelProps {
   lang: Language;
@@ -143,38 +144,9 @@ const MarketIntel: React.FC<MarketIntelProps> = ({ lang }) => {
             </div>
           </div>
 
-          {/* AI Result Display */}
+          {/* AI Result Display - Professional Report */}
           {insight ? (
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden animate-fade-in-up">
-              <div className="p-5 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-white dark:from-slate-700 dark:to-slate-800 flex items-center gap-2">
-                  <Newspaper className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  <h3 className="font-bold">{insight.title}</h3>
-              </div>
-              <div className="p-6">
-                  <div className="prose prose-sm prose-slate dark:prose-invert max-w-none whitespace-pre-line leading-relaxed">
-                    {insight.content}
-                  </div>
-              </div>
-              {insight.sources.length > 0 && (
-                <div className="bg-slate-50 dark:bg-slate-900/50 p-4 border-t border-slate-100 dark:border-slate-700">
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{t.sources[lang]}</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {insight.sources.map((source, idx) => (
-                          <a 
-                            key={idx} 
-                            href={source.uri} 
-                            target="_blank" 
-                            rel="noreferrer"
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 hover:border-blue-300 text-xs text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition"
-                          >
-                            <ExternalLink className="w-3 h-3" />
-                            <span className="truncate max-w-[150px]">{source.title}</span>
-                          </a>
-                      ))}
-                    </div>
-                </div>
-              )}
-            </div>
+            <ProfessionalMarketReport query={query} insight={insight} lang={lang} />
           ) : (
              !loading && (
                <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 p-10 flex flex-col items-center justify-center text-center">
