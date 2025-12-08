@@ -157,17 +157,52 @@ export const EmotionDetectionModal: React.FC<EmotionDetectionModalProps> = ({
     });
   };
 
-  // 얼굴 표정 분석 (시뮬레이션)
-  const analyzeFacialExpression = (): number => {
-    // 실제로는 TensorFlow.js의 face-api.js 또는 MediaPipe를 사용
-    // 여기서는 시뮬레이션으로 랜덤 값 생성
+  // 얼굴 표정 분석 (실제 API 호출)
+  const analyzeFacialExpression = async (): Promise<number> => {
+    const canvas = canvasRef.current;
+    if (!canvas) return 0.5;
+
+    try {
+      // Canvas를 base64로 변환
+      const imageData = canvas.toDataURL('image/jpeg', 0.8);
+      
+      // Python 백엔드 API 호출
+      const response = await fetch('http://localhost:5000/api/analyze-emotion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ image: imageData })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('API Error:', error);
+        // 폴백: 밝기 기반 분석
+        return analyzeFacialExpressionFallback();
+      }
+
+      const result = await response.json();
+      console.log('Emotion API Result:', result);
+      
+      // facial_score 반환 (0-1)
+      return result.facial_score || 0.5;
+      
+    } catch (error) {
+      console.error('Facial analysis error:', error);
+      // 폴백: 밝기 기반 분석
+      return analyzeFacialExpressionFallback();
+    }
+  };
+
+  // 폴백: 밝기 기반 간단한 분석
+  const analyzeFacialExpressionFallback = (): number => {
     const canvas = canvasRef.current;
     if (!canvas) return 0.5;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return 0.5;
 
-    // 이미지 데이터 분석 (밝기 기반 간단한 분석)
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     
@@ -177,8 +212,6 @@ export const EmotionDetectionModal: React.FC<EmotionDetectionModalProps> = ({
     }
     brightness /= (data.length / 4);
 
-    // 밝기를 감정 점수로 변환 (0-1)
-    // 밝은 표정 = 긍정적, 어두운 표정 = 부정적
     return Math.min(Math.max((brightness - 100) / 100, 0), 1);
   };
 
