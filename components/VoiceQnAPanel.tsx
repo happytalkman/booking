@@ -282,17 +282,43 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
       : 'Thank you for your question. To provide more accurate and helpful information, could you please specify the route name, shipper name, or particular topic you\'re interested in?\n\nFor example, you can ask "What\'s the Busan-LA freight rate?", "Current risks?", "Booking recommendation?", or "Freight forecast?"\n\nPlease feel free to ask anytime. I\'m here to help you.';
   };
 
-  // 음성 합성
+  // 음성 합성 (남자 음성)
   const speak = (text: string) => {
     if (synthesis && text) {
       synthesis.cancel();
+      
+      // 사용 가능한 음성 목록 가져오기
+      const voices = synthesis.getVoices();
+      
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang === 'ko' ? 'ko-KR' : 'en-US';
-      utterance.rate = 1.3;
-      utterance.pitch = 1.0;
+      
+      // 남자 음성 선택 (한국어/영어)
+      const maleVoice = voices.find(voice => {
+        if (lang === 'ko') {
+          // 한국어 남자 음성 우선 순위
+          return (voice.lang.includes('ko') || voice.lang.includes('KR')) && 
+                 (voice.name.includes('Male') || voice.name.includes('남') || 
+                  voice.name.includes('Hyeryun') || !voice.name.includes('Female'));
+        } else {
+          // 영어 남자 음성 우선 순위
+          return voice.lang.includes('en') && 
+                 (voice.name.includes('Male') || voice.name.includes('David') || 
+                  voice.name.includes('James') || !voice.name.includes('Female'));
+        }
+      });
+      
+      if (maleVoice) {
+        utterance.voice = maleVoice;
+      }
+      
+      utterance.rate = 1.2; // 약간 느리게 (더 명확하게)
+      utterance.pitch = 0.9; // 낮은 음높이 (남자 음성)
       utterance.volume = 1.0;
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      
       synthesis.speak(utterance);
     }
   };
@@ -316,21 +342,222 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
     setIsSpeaking(false);
   };
 
-  // 보고서 생성
+  // PDF 보고서 생성
   const generateReport = () => {
     if (conversations.length === 0) {
       alert(lang === 'ko' ? '대화 기록이 없습니다.' : 'No conversation history.');
       return;
     }
 
-    const reportContent = generateReportContent();
-    const blob = new Blob([reportContent], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `voice-qa-report-${Date.now()}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const reportHTML = generatePDFReportHTML();
+    
+    // HTML을 새 창에서 열고 인쇄 대화상자 표시 (PDF로 저장 가능)
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(reportHTML);
+      printWindow.document.close();
+      
+      // 페이지 로드 후 인쇄 대화상자 자동 표시
+      printWindow.onload = () => {
+        printWindow.print();
+      };
+    }
+  };
+
+  // PDF용 HTML 보고서 생성
+  const generatePDFReportHTML = (): string => {
+    const timestamp = new Date().toLocaleString(lang === 'ko' ? 'ko-KR' : 'en-US');
+    const positiveCount = conversations.filter(c => c.emotion === 'positive').length;
+    const neutralCount = conversations.filter(c => c.emotion === 'neutral').length;
+    const negativeCount = conversations.filter(c => c.emotion === 'negative').length;
+    
+    const title = lang === 'ko' ? '음성 질의응답 보고서' : 'Voice Q&A Report';
+    const generatedLabel = lang === 'ko' ? '생성 시간' : 'Generated';
+    const totalLabel = lang === 'ko' ? '총 대화 수' : 'Total Conversations';
+    const emotionSummaryLabel = lang === 'ko' ? '감정 분석 요약' : 'Emotion Analysis Summary';
+    const positiveLabel = lang === 'ko' ? '긍정적' : 'Positive';
+    const neutralLabel = lang === 'ko' ? '중립' : 'Neutral';
+    const negativeLabel = lang === 'ko' ? '부정적' : 'Negative';
+    const conversationLabel = lang === 'ko' ? '대화' : 'Conversation';
+    const timeLabel = lang === 'ko' ? '시간' : 'Time';
+    const emotionLabel = lang === 'ko' ? '감정' : 'Emotion';
+    const confidenceLabel = lang === 'ko' ? '신뢰도' : 'Confidence';
+    const questionLabel = lang === 'ko' ? '질문' : 'Question';
+    const answerLabel = lang === 'ko' ? '답변' : 'Answer';
+    
+    const conversationRows = conversations.map((conv, idx) => {
+      const emotionEmoji = conv.emotion === 'positive' ? '😊' : conv.emotion === 'negative' ? '😟' : '😐';
+      const emotionText = conv.emotion === 'positive' ? positiveLabel : 
+                          conv.emotion === 'negative' ? negativeLabel : neutralLabel;
+      const emotionColor = conv.emotion === 'positive' ? '#10b981' : 
+                           conv.emotion === 'negative' ? '#ef4444' : '#64748b';
+      
+      return `
+        <div style="margin-bottom: 30px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
+          <h3 style="color: #1e293b; margin-bottom: 15px; font-size: 18px;">
+            ${conversationLabel} ${idx + 1}
+          </h3>
+          <div style="margin-bottom: 10px;">
+            <strong>${timeLabel}:</strong> ${conv.timestamp.toLocaleString(lang === 'ko' ? 'ko-KR' : 'en-US')}
+          </div>
+          <div style="margin-bottom: 15px;">
+            <strong>${emotionLabel}:</strong> 
+            <span style="color: ${emotionColor}; font-weight: bold;">
+              ${emotionEmoji} ${emotionText}
+            </span>
+            <span style="color: #64748b; margin-left: 10px;">
+              (${confidenceLabel}: ${(conv.confidence * 100).toFixed(0)}%)
+            </span>
+          </div>
+          <div style="margin-bottom: 15px; padding: 15px; background: white; border-left: 4px solid #3b82f6; border-radius: 4px;">
+            <strong style="color: #3b82f6;">${questionLabel}:</strong>
+            <p style="margin: 10px 0 0 0; color: #1e293b; line-height: 1.6;">${conv.question}</p>
+          </div>
+          <div style="padding: 15px; background: white; border-left: 4px solid #10b981; border-radius: 4px;">
+            <strong style="color: #10b981;">${answerLabel}:</strong>
+            <p style="margin: 10px 0 0 0; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">${conv.answer}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    return `
+      <!DOCTYPE html>
+      <html lang="${lang === 'ko' ? 'ko' : 'en'}">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${title}</title>
+        <style>
+          @media print {
+            body { margin: 0; padding: 20px; }
+            .no-print { display: none; }
+          }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: white;
+          }
+          h1 {
+            color: #7c3aed;
+            border-bottom: 3px solid #7c3aed;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 32px;
+          }
+          h2 {
+            color: #1e293b;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 24px;
+          }
+          .header-info {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+          }
+          .header-info p {
+            margin: 5px 0;
+            color: #475569;
+          }
+          .emotion-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+          }
+          .emotion-card {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid;
+          }
+          .emotion-card.positive {
+            background: #f0fdf4;
+            border-color: #10b981;
+          }
+          .emotion-card.neutral {
+            background: #f8fafc;
+            border-color: #64748b;
+          }
+          .emotion-card.negative {
+            background: #fef2f2;
+            border-color: #ef4444;
+          }
+          .emotion-card .count {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+          .emotion-card.positive .count { color: #10b981; }
+          .emotion-card.neutral .count { color: #64748b; }
+          .emotion-card.negative .count { color: #ef4444; }
+          .emotion-card .label {
+            font-size: 14px;
+            color: #64748b;
+          }
+          .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          }
+          .print-button:hover {
+            background: #6d28d9;
+          }
+        </style>
+      </head>
+      <body>
+        <button class="print-button no-print" onclick="window.print()">
+          🖨️ ${lang === 'ko' ? 'PDF로 저장' : 'Save as PDF'}
+        </button>
+        
+        <h1>📊 ${title}</h1>
+        
+        <div class="header-info">
+          <p><strong>${generatedLabel}:</strong> ${timestamp}</p>
+          <p><strong>${totalLabel}:</strong> ${conversations.length}${lang === 'ko' ? '개' : ''}</p>
+        </div>
+        
+        <h2>📈 ${emotionSummaryLabel}</h2>
+        <div class="emotion-summary">
+          <div class="emotion-card positive">
+            <div class="count">😊 ${positiveCount}</div>
+            <div class="label">${positiveLabel}</div>
+          </div>
+          <div class="emotion-card neutral">
+            <div class="count">😐 ${neutralCount}</div>
+            <div class="label">${neutralLabel}</div>
+          </div>
+          <div class="emotion-card negative">
+            <div class="count">😟 ${negativeCount}</div>
+            <div class="label">${negativeLabel}</div>
+          </div>
+        </div>
+        
+        <h2>💬 ${lang === 'ko' ? '대화 상세 내역' : 'Conversation Details'}</h2>
+        ${conversationRows}
+        
+        <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #e2e8f0; text-align: center; color: #64748b; font-size: 14px;">
+          <p>KMTC 온톨로지 기반 부킹 에이전틱AI 플랫폼</p>
+          <p>© 2024 KMTC. All rights reserved.</p>
+        </div>
+      </body>
+      </html>
+    `;
   };
 
   const generateReportContent = (): string => {
@@ -442,19 +669,23 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
             </p>
           </div>
 
-          {/* 스피커 상태 */}
+          {/* 스피커 버튼 (음성 중지) */}
           <div className="text-center">
-            <div className={`w-20 h-20 rounded-full flex items-center justify-center ${
-              isSpeaking
-                ? 'bg-green-500 animate-pulse'
-                : 'bg-slate-300 dark:bg-slate-600'
-            }`}>
+            <button
+              onClick={stopSpeaking}
+              disabled={!isSpeaking}
+              className={`w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-lg ${
+                isSpeaking
+                  ? 'bg-green-500 hover:bg-green-600 animate-pulse cursor-pointer'
+                  : 'bg-slate-300 dark:bg-slate-600 cursor-not-allowed opacity-50'
+              }`}
+            >
               {isSpeaking ? (
                 <Volume2 className="w-10 h-10 text-white" />
               ) : (
                 <VolumeX className="w-10 h-10 text-white" />
               )}
-            </div>
+            </button>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
               {isSpeaking ? t.speaking[lang] : t.stop[lang]}
             </p>
