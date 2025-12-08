@@ -812,28 +812,11 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
                       </p>
                     </div>
                     
-                    {/* 음성 출력 버튼 (남자/여자) */}
+                    {/* 음성 출력 버튼 (여자 음성만) */}
                     <div className="flex items-center gap-3 ml-5 mt-2">
                       <span className="text-xs text-slate-500 dark:text-slate-400">
                         {lang === 'ko' ? '음성 듣기:' : 'Listen:'}
                       </span>
-                      
-                      {/* 남자 음성 버튼 */}
-                      <button
-                        onClick={() => speakAnswer(conv.answer, conversations.length - 1 - idx, 'male')}
-                        disabled={isSpeaking && speakingIndex !== conversations.length - 1 - idx}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                          speakingIndex === conversations.length - 1 - idx && isSpeaking
-                            ? 'bg-blue-500 text-white animate-pulse scale-105'
-                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50'
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
-                      >
-                        <Volume2 className="w-3.5 h-3.5" />
-                        {lang === 'ko' ? '남자' : 'Male'}
-                        {speakingIndex === conversations.length - 1 - idx && isSpeaking && (
-                          <span className="inline-block w-1 h-1 bg-white rounded-full animate-ping" />
-                        )}
-                      </button>
                       
                       {/* 여자 음성 버튼 */}
                       <button
