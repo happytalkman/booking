@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인증 시스템 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: none;
+        }
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .result.show {
+            display: block;
+        }
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            color: #004085;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 인증 시스템 테스트</h1>
+        <p class="subtitle">KMTC 부킹 최적화 플랫폼</p>
+
+        <div class="info">
+            ℹ️ 백엔드 서버가 <code>http://localhost:3001</code>에서 실행 중이어야 합니다.
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('send')">OTP 전송</button>
+            <button class="tab" onclick="switchTab('verify')">OTP 검증</button>
+            <button class="tab" onclick="switchTab('health')">서버 상태</button>
+        </div>
+
+        <!-- OTP 전송 탭 -->
+        <div id="send-tab" class="tab-content active">
+            <form id="send-form">
+                <div class="form-group">
+                    <label for="email">이메일 주소</label>
+                    <input type="email" id="email" placeholder="your@email.com" required>
+                </div>
+                <button type="submit" id="send-btn">
+                    <span id="send-text">인증번호 전송</span>
+                </button>
+            </form>
+            <div id="send-result" class="result"></div>
+        </div>
+
+        <!-- OTP 검증 탭 -->
+        <div id="verify-tab" class="tab-content">
+            <form id="verify-form">
+                <div class="form-group">
+                    <label for="verify-email">이메일 주소</label>
+                    <input type="email" id="verify-email" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="otp">인증번호 (6자리)</label>
+                    <input type="text" id="otp" placeholder="123456" maxlength="6" pattern="[0-9]{6}" required>
+                </div>
+                <button type="submit" id="verify-btn">
+                    <span id="verify-text">로그인</span>
+                </button>
+            </form>
+            <div id="verify-result" class="result"></div>
+        </div>
+
+        <!-- 서버 상태 탭 -->
+        <div id="health-tab" class="tab-content">
+            <button onclick="checkHealth()" id="health-btn">
+                <span id="health-text">서버 상태 확인</span>
+            </button>
+            <div id="health-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001';
+
+        function switchTab(tab) {
+            // 탭 버튼 활성화
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 탭 컨텐츠 표시
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+        }
+
+        // OTP 전송
+        document.getElementById('send-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const btn = document.getElementById('send-btn');
+            const text = document.getElementById('send-text');
+            const result = document.getElementById('send-result');
+
+            btn.disabled = true;
+            text.innerHTML = '<span class="loading"></span> 전송 중...';
+            result.classList.remove('show', 'success', 'error');
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/send-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    result.className = 'result success show';
+                    result.textContent = `✅ ${data.message}\n\n이메일을 확인하고 "OTP 검증" 탭에서 인증번호를 입력하세요.`;
+                    
+                    // 검증 탭의 이메일 자동 입력
+                    document.getElementById('verify-email').value = email;
+                } else {
+                    result.className = 'result error show';
+                    result.textContent = `❌ ${data.message}`;
+                }
+            } catch (error) {
+                result.className = 'result error show';
+                result.textContent = `❌ 네트워크 오류: ${error.message}\n\n서버가 실행 중인지 확인하세요.`;
+            } finally {
+                btn.disabled = false;
+                text.textContent = '인증번호 전송';
+            }
+        });
+
+        // OTP 검증
+        document.getElementById('verify-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('verify-email').value;
+            const otp = document.getElementById('otp').value;
+            const btn = document.getElementById('verify-btn');
+            const text = document.getElementById('verify-text');
+            const result = document.getElementById('verify-result');
+
+            if (otp.length !== 6) {
+                result.className = 'result error show';
+                result.textContent = '❌ 6자리 인증번호를 입력하세요.';
+                return;
+            }
+
+            btn.disabled = true;
+            text.innerHTML = '<span class="loading"></span> 확인 중...';
+            result.classList.remove('show', 'success', 'error');
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/verify-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    result.className = 'result success show';
+                    result.innerHTML = `
+                        ✅ ${data.message}<br><br>
+                        <strong>사용자 정보:</strong><br>
+                        이름: ${data.name}<br>
+                        역할: ${data.role}<br>
+                        토큰: ${data.token.substring(0, 30)}...
+                    `;
+                } else {
+                    result.className = 'result error show';
+                    result.textContent = `❌ ${data.message}`;
+                }
+            } catch (error) {
+                result.className = 'result error show';
+                result.textContent = `❌ 네트워크 오류: ${error.message}`;
+            } finally {
+                btn.disabled = false;
+                text.textContent = '로그인';
+            }
+        });
+
+        // 서버 상태 확인
+        async function checkHealth() {
+            const btn = document.getElementById('health-btn');
+            const text = document.getElementById('health-text');
+            const result = document.getElementById('health-result');
+
+            btn.disabled = true;
+            text.innerHTML = '<span class="loading"></span> 확인 중...';
+            result.classList.remove('show', 'success', 'error');
+
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    result.className = 'result success show';
+                    result.innerHTML = `
+                        ✅ 서버가 정상 작동 중입니다.<br><br>
+                        <strong>상태:</strong> ${data.status}<br>
+                        <strong>시간:</strong> ${new Date(data.timestamp).toLocaleString('ko-KR')}
+                    `;
+                } else {
+                    result.className = 'result error show';
+                    result.textContent = '❌ 서버 응답이 비정상입니다.';
+                }
+            } catch (error) {
+                result.className = 'result error show';
+                result.textContent = `❌ 서버에 연결할 수 없습니다.\n\n서버가 http://localhost:3001에서 실행 중인지 확인하세요.`;
+            } finally {
+                btn.disabled = false;
+                text.textContent = '서버 상태 확인';
+            }
+        }
+
+        // 페이지 로드 시 서버 상태 자동 확인
+        window.addEventListener('load', () => {
+            setTimeout(checkHealth, 500);
+        });
+    </script>
+</body>
+</html>

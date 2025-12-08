@@ -4,29 +4,35 @@ AI 기반 해운 물류 부킹 예측 및 최적화 시스템
 
 ## 🚀 주요 기능
 
-### 1. 멀티 LLM AI 시스템
+### 🔐 1. OTP 이메일 인증 시스템 (NEW!)
+- **이메일 기반 로그인**: 비밀번호 없이 OTP로 간편 로그인
+- **역할 기반 접근 제어**: 화주/포워더/선사/관리자 자동 역할 부여
+- **감사 로그**: 모든 로그인 활동 자동 기록
+- **보안**: 5분 유효시간, 5회 시도 제한, JWT 토큰
+
+### 2. 멀티 LLM AI 시스템
 - **OpenRouter 통합**: GPT-4, Claude, Gemini 등 여러 AI 모델 지원
 - **자동 폴백**: 모델 장애 시 자동으로 다른 모델로 전환
 - **AI 챗봇**: 실시간 부킹 상담 및 추천
 
-### 2. 부킹 예측 및 추천
+### 3. 부킹 예측 및 추천
 - **ML 기반 예측**: TensorFlow.js로 30일 운임 예측
 - **AI 부킹 추천**: 지금 부킹/대기 권장/모니터링 3가지 액션 제공
 - **실시간 알림**: 운임 하락, 경쟁사 변경, 리스크, 기회 알림
 
-### 3. 시나리오 시뮬레이터
+### 4. 시나리오 시뮬레이터
 - **복합 변수 조정**: 유가, 홍해 리스크, 수요, 환율 동시 시뮬레이션
 - **예측 분석**: 각 시나리오별 운임 및 리스크 예측
 
-### 4. 경쟁사 벤치마킹
+### 5. 경쟁사 벤치마킹
 - **5개 선사 비교**: KMTC, Maersk, MSC, CMA CGM, Hapag-Lloyd
 - **실시간 지표**: 운임, 시장점유율, 정시도착률 비교
 
-### 5. 음성 AI 어시스턴트
+### 6. 음성 AI 어시스턴트
 - **Web Speech API**: 음성 입력 및 출력 지원
 - **핸즈프리 작업**: 음성으로 부킹 조회 및 추천 받기
 
-### 6. 데이터 품질 검증 (SHACL)
+### 7. 데이터 품질 검증 (SHACL)
 - **온톨로지 기반**: OWL2 해운 도메인 온톨로지
 - **SHACL 제약조건**: W3C 표준 데이터 품질 검증
 - **실시간 검증**: 화주, 부킹, 예측, 항로 데이터 무결성 보장
@@ -39,6 +45,11 @@ AI 기반 해운 물류 부킹 예측 및 최적화 시스템
 - **Tailwind CSS** (스타일링)
 - **Recharts** (데이터 시각화)
 - **Lucide React** (아이콘)
+
+### Backend
+- **Node.js** + **Express** (인증 서버)
+- **Nodemailer** (이메일 전송)
+- **JWT** (토큰 인증)
 
 ### AI/ML
 - **OpenRouter API** (멀티 LLM)
@@ -56,45 +67,86 @@ AI 기반 해운 물류 부킹 예측 및 최적화 시스템
 ### Prerequisites
 - Node.js 18+
 - npm 또는 yarn
+- Gmail 계정 (이메일 인증용)
 
-### 1. 의존성 설치
+### 1. 프론트엔드 설치
 ```bash
+# 의존성 설치
 npm install
-```
 
-### 2. 환경 변수 설정
-`.env.local` 파일에 API 키 설정:
-```env
+# 환경 변수 설정
+# .env.local 파일에 API 키 설정
 VITE_OPENROUTER_API_KEY=your_openrouter_key
 VITE_GEMINI_API_KEY=your_gemini_key
+VITE_AUTH_API_URL=http://localhost:3001
 ```
 
-### 3. 개발 서버 실행
+### 2. 백엔드 인증 서버 설치
+```bash
+# 서버 디렉토리로 이동
+cd server
+
+# 의존성 설치
+npm install
+
+# 환경 변수 설정
+cp .env.example .env
+# .env 파일에 이메일 설정 입력
+```
+
+**Gmail 앱 비밀번호 생성:**
+1. Google 계정 → 보안 → 2단계 인증 활성화
+2. 앱 비밀번호 생성 → "메일" 선택
+3. 16자리 비밀번호를 `.env`의 `EMAIL_PASSWORD`에 입력
+
+### 3. 서버 실행
+
+**터미널 1 - 백엔드 서버:**
+```bash
+cd server
+npm run dev
+```
+
+**터미널 2 - 프론트엔드:**
 ```bash
 npm run dev
 ```
 
-### 4. 프로덕션 빌드
+### 4. 로그인
+- 브라우저에서 `http://localhost:5173` 접속
+- 이메일 주소 입력
+- 이메일로 받은 6자리 OTP 입력
+- 로그인 완료!
+
+### 5. 프로덕션 빌드
 ```bash
 npm run build
 npm run preview
 ```
+
+📖 **자세한 인증 설정 가이드**: [AUTH_SETUP_GUIDE.md](./AUTH_SETUP_GUIDE.md)
 
 ## 📁 프로젝트 구조
 
 ```
 kmtc-booking-platform/
 ├── components/          # React 컴포넌트
+│   ├── LoginPage.tsx           # 🔐 OTP 로그인 UI
 │   ├── AIChatAssistant.tsx
 │   ├── BookingRecommendation.tsx
 │   ├── DataQualityPanel.tsx    # SHACL 검증 UI
 │   ├── MLPredictionPanel.tsx
 │   └── ...
 ├── services/           # 비즈니스 로직
+│   ├── authService.ts          # 🔐 인증 서비스
 │   ├── openRouterService.ts
 │   ├── mlPrediction.ts
 │   ├── shaclValidator.ts       # SHACL 검증 서비스
 │   └── mockData.ts
+├── server/             # 🔐 백엔드 인증 서버
+│   ├── index.js                # Express 서버
+│   ├── package.json
+│   └── .env.example
 ├── ontology/           # 시맨틱 웹 파일
 │   ├── kmtc_booking_ontology.ttl   # OWL2 온톨로지
 │   └── kmtc_booking_shacl.ttl      # SHACL 제약조건
@@ -102,6 +154,7 @@ kmtc-booking-platform/
 │   ├── Dashboard.tsx
 │   ├── BookingAnalysis.tsx
 │   └── ...
+├── AUTH_SETUP_GUIDE.md # 🔐 인증 설정 가이드
 └── contexts/           # React Context
     └── AppContext.tsx
 ```

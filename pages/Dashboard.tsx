@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DollarSign, Activity, Clock, BarChart3, Users, AlertTriangle, Target, Search, Calendar } from 'lucide-react';
 import KPICard from '../components/KPICard';
 import BookingRecommendation from '../components/BookingRecommendation';
@@ -7,6 +7,8 @@ import AdvancedSimulator from '../components/AdvancedSimulator';
 import CompetitorBenchmark from '../components/CompetitorBenchmark';
 import MLPredictionPanel from '../components/MLPredictionPanel';
 import { DataQualityPanel } from '../components/DataQualityPanel';
+import { KPIDetailModal } from '../components/KPIDetailModal';
+import { AIInsightCard } from '../components/AIInsightCard';
 import { KPI, Language } from '../types';
 
 interface DashboardProps {
@@ -126,6 +128,19 @@ const Dashboard: React.FC<DashboardProps> = ({ lang }) => {
     }
   ];
 
+  // KPI 목표 및 실제 값 (프로그레스 바용)
+  const kpiTargets = [
+    { target: 40000000, actual: 42500000 }, // Revenue
+    { target: 7500000, actual: 8400000 },   // Profit
+    { target: 92, actual: 94.2 },           // Load Factor
+    { target: 85, actual: 88.4 },           // Accuracy
+    { target: 10, actual: 8.5 },            // Cancellation (lower is better)
+    { target: 2, actual: 1.0 },             // No-Show (lower is better)
+  ];
+
+  // Modal state
+  const [selectedKPI, setSelectedKPI] = useState<{ kpi: KPI; index: number } | null>(null);
+
   return (
     <div className="space-y-6 animate-fade-in text-slate-900 dark:text-slate-100">
       <div className="flex justify-between items-end">
@@ -135,15 +150,36 @@ const Dashboard: React.FC<DashboardProps> = ({ lang }) => {
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 shadow-sm">
           <Calendar className="w-4 h-4" />
-          <span>2025-12-06</span>
+          <span>2024-12-08</span>
         </div>
       </div>
 
+      {/* AI Insight Card */}
+      <AIInsightCard lang={lang} />
+
+      {/* KPI Cards with Progress Bars */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi, index) => (
-          <KPICard key={index} kpi={kpi} />
+          <KPICard 
+            key={index} 
+            kpi={kpi}
+            target={kpiTargets[index]?.target}
+            actual={kpiTargets[index]?.actual}
+            onClick={() => setSelectedKPI({ kpi, index })}
+          />
         ))}
       </div>
+
+      {/* KPI Detail Modal */}
+      {selectedKPI && (
+        <KPIDetailModal
+          isOpen={true}
+          onClose={() => setSelectedKPI(null)}
+          kpiTitle={selectedKPI.kpi.title}
+          kpiValue={selectedKPI.kpi.value}
+          kpiIcon={selectedKPI.kpi.icon}
+        />
+      )}
 
       {/* Historical Comparison Chart */}
       <HistoricalComparison lang={lang} />

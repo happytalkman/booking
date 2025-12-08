@@ -222,26 +222,39 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
 
         // Links
         const link = g.append("g")
-          .attr("stroke", "#cbd5e1")
-          .attr("stroke-opacity", 0.6)
+          .attr("stroke", "#94a3b8")
+          .attr("stroke-opacity", 0.7)
           .selectAll("line")
           .data(filteredLinks)
           .join("line")
-          .attr("stroke-width", 1.5)
+          .attr("stroke-width", 2)
           .attr("marker-end", "url(#arrowhead)");
 
-        // Marker
+        // Link Labels (관계 표시)
+        const linkLabel = g.append("g")
+          .selectAll("text")
+          .data(filteredLinks)
+          .join("text")
+          .text(d => d.relationship)
+          .attr("font-size", "9px")
+          .attr("fill", "#64748b")
+          .attr("text-anchor", "middle")
+          .attr("dy", -3)
+          .style("pointer-events", "none")
+          .style("opacity", 0.7);
+
+        // Marker (개선된 화살표)
         svg.append('defs').append('marker')
           .attr('id', 'arrowhead')
           .attr('viewBox', '-0 -5 10 10')
           .attr('refX', 22)
           .attr('refY', 0)
           .attr('orient', 'auto')
-          .attr('markerWidth', 6)
-          .attr('markerHeight', 6)
+          .attr('markerWidth', 8)
+          .attr('markerHeight', 8)
           .append('svg:path')
           .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-          .attr('fill', '#cbd5e1')
+          .attr('fill', '#94a3b8')
           .style('stroke', 'none');
 
         // Nodes
@@ -279,6 +292,10 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
             .attr("x2", (d: any) => d.target.x)
             .attr("y2", (d: any) => d.target.y);
 
+          linkLabel
+            .attr("x", (d: any) => (d.source.x + d.target.x) / 2)
+            .attr("y", (d: any) => (d.source.y + d.target.y) / 2);
+
           node
             .attr("cx", (d: any) => d.x)
             .attr("cy", (d: any) => d.y);
@@ -314,16 +331,26 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
         
         if (!centerNode) return;
 
-        // Find neighbors (depth 1)
+        // Find neighbors (depth 1) - 문자열로 변환
         const neighbors = links
-            .filter(l => l.source === centerId || l.target === centerId)
-            .map(l => l.source === centerId ? l.target : l.source);
+            .filter(l => {
+                const sourceId = typeof l.source === 'object' ? (l.source as any).id : l.source;
+                const targetId = typeof l.target === 'object' ? (l.target as any).id : l.target;
+                return sourceId === centerId || targetId === centerId;
+            })
+            .map(l => {
+                const sourceId = typeof l.source === 'object' ? (l.source as any).id : l.source;
+                const targetId = typeof l.target === 'object' ? (l.target as any).id : l.target;
+                return sourceId === centerId ? targetId : sourceId;
+            });
         
         const radialNodes = nodes.filter(n => n.id === centerId || neighbors.includes(n.id));
-        const radialLinks = links.filter(l => 
-            (l.source === centerId && neighbors.includes(l.target)) || 
-            (l.target === centerId && neighbors.includes(l.source))
-        );
+        const radialLinks = links.filter(l => {
+            const sourceId = typeof l.source === 'object' ? (l.source as any).id : l.source;
+            const targetId = typeof l.target === 'object' ? (l.target as any).id : l.target;
+            return (sourceId === centerId && neighbors.includes(targetId)) || 
+                   (targetId === centerId && neighbors.includes(sourceId));
+        });
 
         // Position nodes
         const cx = width / 2;
@@ -346,21 +373,142 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
             }
         });
 
-        // Draw Links
-        g.append("g")
-          .attr("stroke", "#cbd5e1")
-          .attr("stroke-opacity", 0.6)
+        // Marker for arrows (Radial view)
+        svg.append('defs').append('marker')
+          .attr('id', 'arrowhead-radial')
+          .attr('viewBox', '-0 -5 10 10')
+          .attr('refX', 20)
+          .attr('refY', 0)
+          .attr('orient', 'auto')
+          .attr('markerWidth', 8)
+          .attr('markerHeight', 8)
+          .append('svg:path')
+          .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+          .attr('fill', '#cbd5e1')
+          .style('stroke', 'none');
+
+        // Draw Links (저장해서 업데이트 가능하게)
+        const linkGroup = g.append("g");
+        
+        const link = linkGroup
           .selectAll("line")
           .data(radialLinks)
           .join("line")
-          .attr("x1", (d:any) => (nodes.find(n => n.id === d.source) as any)?.x || 0)
-          .attr("y1", (d:any) => (nodes.find(n => n.id === d.source) as any)?.y || 0)
-          .attr("x2", (d:any) => (nodes.find(n => n.id === d.target) as any)?.x || 0)
-          .attr("y2", (d:any) => (nodes.find(n => n.id === d.target) as any)?.y || 0)
-          .attr("stroke-width", 1.5);
+          .attr("stroke", "#cbd5e1")
+          .attr("stroke-opacity", 0.6)
+          .attr("stroke-width", 2)
+          .attr("marker-end", "url(#arrowhead-radial)");
+
+        // Update link positions
+        const updateLinks = () => {
+          link
+            .attr("x1", (d:any) => {
+                const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
+                const sourceNode = radialNodes.find(n => n.id === sourceId);
+                return (sourceNode as any)?.x || 0;
+            })
+            .attr("y1", (d:any) => {
+                const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
+                const sourceNode = radialNodes.find(n => n.id === sourceId);
+                return (sourceNode as any)?.y || 0;
+            })
+            .attr("x2", (d:any) => {
+                const targetId = typeof d.target === 'object' ? d.target.id : d.target;
+                const targetNode = radialNodes.find(n => n.id === targetId);
+                return (targetNode as any)?.x || 0;
+            })
+            .attr("y2", (d:any) => {
+                const targetId = typeof d.target === 'object' ? d.target.id : d.target;
+                const targetNode = radialNodes.find(n => n.id === targetId);
+                return (targetNode as any)?.y || 0;
+            });
+        };
+
+        // 초기 링크 위치 설정
+        updateLinks();
+
+        // Link Labels for Radial (관계 표시)
+        const linkLabelRadial = linkGroup
+          .selectAll("text")
+          .data(radialLinks)
+          .join("text")
+          .text(d => d.relationship)
+          .attr("font-size", "9px")
+          .attr("fill", "#64748b")
+          .attr("text-anchor", "middle")
+          .attr("dy", -3)
+          .style("pointer-events", "none")
+          .style("opacity", 0.8);
+
+        // Update link labels
+        const updateLinkLabels = () => {
+          linkLabelRadial
+            .attr("x", (d:any) => {
+                const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
+                const targetId = typeof d.target === 'object' ? d.target.id : d.target;
+                const sourceNode = radialNodes.find(n => n.id === sourceId);
+                const targetNode = radialNodes.find(n => n.id === targetId);
+                return ((sourceNode as any)?.x + (targetNode as any)?.x) / 2 || 0;
+            })
+            .attr("y", (d:any) => {
+                const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
+                const targetId = typeof d.target === 'object' ? d.target.id : d.target;
+                const sourceNode = radialNodes.find(n => n.id === sourceId);
+                const targetNode = radialNodes.find(n => n.id === targetId);
+                return ((sourceNode as any)?.y + (targetNode as any)?.y) / 2 || 0;
+            });
+        };
+
+        // 초기 레이블 위치 설정
+        updateLinkLabels();
+
+        // Radial 드래그 함수 (개선)
+        const radialDrag = () => {
+          function dragstarted(event: any, d: any) {
+            d3.select(event.sourceEvent.target)
+              .raise()
+              .attr("stroke", "#fbbf24")
+              .attr("stroke-width", 3)
+              .style("cursor", "grabbing");
+          }
+          
+          function dragged(event: any, d: any) {
+            // 노드 위치 업데이트
+            d.x = event.x;
+            d.y = event.y;
+            
+            // 노드 원 위치 업데이트
+            d3.select(event.sourceEvent.target)
+              .attr("cx", d.x)
+              .attr("cy", d.y);
+            
+            // 라벨 위치 업데이트
+            label.filter((n: any) => n.id === d.id)
+              .attr("x", d.x)
+              .attr("y", d.y + (d.id === centerId ? 55 : 25));
+            
+            // 링크 실시간 업데이트
+            updateLinks();
+            
+            // 링크 레이블 실시간 업데이트
+            updateLinkLabels();
+          }
+          
+          function dragended(event: any, d: any) {
+            d3.select(event.sourceEvent.target)
+              .attr("stroke", "#fff")
+              .attr("stroke-width", 2)
+              .style("cursor", "grab");
+          }
+          
+          return d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended);
+        };
 
         // Draw Nodes
-        g.append("g")
+        const node = g.append("g")
           .attr("stroke", "#fff")
           .attr("stroke-width", 2)
           .selectAll("circle")
@@ -370,14 +518,15 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
           .attr("cy", (d:any) => d.y)
           .attr("r", (d) => d.id === centerId ? 40 : 15)
           .attr("fill", (d) => colorScale(d.type))
-          .attr("cursor", "pointer")
+          .attr("cursor", "grab")
+          .call(radialDrag() as any)
           .on("click", (event, d) => {
             setSelectedNode(d);
             event.stopPropagation();
           });
 
         // Labels
-        g.append("g")
+        const label = g.append("g")
           .selectAll("text")
           .data(radialNodes)
           .join("text")
@@ -387,7 +536,8 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
           .attr("font-size", "10px")
           .attr("font-weight", "600")
           .attr("text-anchor", "middle")
-          .attr("fill", "#334155");
+          .attr("fill", "#334155")
+          .style("pointer-events", "none");
           
         // Title for Radial
         g.append("text")

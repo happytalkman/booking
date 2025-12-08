@@ -107,18 +107,24 @@ export const DataQualityPanel: React.FC = () => {
   };
   
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          📊 데이터 품질 검증 (SHACL)
-        </h2>
-        <p className="text-gray-600">
-          KMTC 부킹 시스템의 데이터 무결성 및 비즈니스 규칙 준수를 검증합니다
-        </p>
+    <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+          <span className="text-2xl">📊</span>
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+            데이터 품질 검증 (SHACL)
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            데이터 무결성 및 비즈니스 규칙 준수 검증
+          </p>
+        </div>
       </div>
       
       {/* 탭 메뉴 */}
-      <div className="flex space-x-2 mb-6 border-b">
+      <div className="flex space-x-1 mb-6 mt-6 bg-slate-100 dark:bg-slate-700/50 p-1 rounded-lg">
         {[
           { key: 'shipper', label: '화주', icon: '👤' },
           { key: 'booking', label: '부킹', icon: '📦' },
@@ -131,21 +137,21 @@ export const DataQualityPanel: React.FC = () => {
               setActiveTab(tab.key as any);
               setValidationResult(null);
             }}
-            className={`px-4 py-2 font-medium transition-colors ${
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${
               activeTab === tab.key
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-800'
+                ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            {tab.icon} {tab.label}
+            <span className="mr-1">{tab.icon}</span> {tab.label}
           </button>
         ))}
       </div>
       
       {/* 샘플 데이터 표시 */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <h3 className="font-semibold text-gray-700 mb-3">검증할 샘플 데이터:</h3>
-        <pre className="text-sm text-gray-800 overflow-x-auto">
+      <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">검증할 샘플 데이터:</h3>
+        <pre className="text-xs text-slate-800 dark:text-slate-300 overflow-x-auto font-mono bg-white dark:bg-slate-800 p-3 rounded border border-slate-200 dark:border-slate-600">
           {JSON.stringify(
             activeTab === 'shipper' ? sampleShipper :
             activeTab === 'booking' ? sampleBooking :
@@ -160,30 +166,32 @@ export const DataQualityPanel: React.FC = () => {
       {/* 검증 실행 버튼 */}
       <button
         onClick={runValidation}
-        className="w-full mb-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+        className="w-full mb-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
       >
-        🔍 SHACL 검증 실행
+        <span className="mr-2">🔍</span> SHACL 검증 실행
       </button>
 
       {/* 검증 결과 */}
       {validationResult && (
         <div className="space-y-4">
           {/* 요약 */}
-          <div className={`p-4 rounded-lg ${
-            validationResult.isValid ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+          <div className={`p-4 rounded-lg border ${
+            validationResult.isValid 
+              ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+              : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
           }`}>
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {validationResult.isValid ? '✅ 검증 통과' : '❌ 검증 실패'}
               </h3>
-              <div className="text-sm">
+              <div className="text-xs text-slate-600 dark:text-slate-400">
                 <span className="font-medium">총 검사:</span> {validationResult.summary.totalChecks} |{' '}
-                <span className="font-medium text-green-600">통과:</span> {validationResult.summary.passed} |{' '}
-                <span className="font-medium text-red-600">실패:</span> {validationResult.summary.failed}
+                <span className="font-medium text-green-600 dark:text-green-400">통과:</span> {validationResult.summary.passed} |{' '}
+                <span className="font-medium text-red-600 dark:text-red-400">실패:</span> {validationResult.summary.failed}
               </div>
             </div>
             {validationResult.isValid && (
-              <p className="text-green-700">
+              <p className="text-sm text-green-700 dark:text-green-300">
                 모든 SHACL 제약조건을 만족합니다. 데이터 품질이 우수합니다.
               </p>
             )}
@@ -192,37 +200,55 @@ export const DataQualityPanel: React.FC = () => {
           {/* 위반 사항 목록 */}
           {validationResult.violations.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-3">
                 검증 결과 상세:
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {validationResult.violations.map((violation, index) => (
                   <div
                     key={index}
-                    className={`p-4 rounded-lg border ${getSeverityColor(violation.severity)}`}
+                    className={`p-4 rounded-lg border ${
+                      violation.severity === 'error' 
+                        ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' 
+                        : violation.severity === 'warning'
+                        ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
+                        : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                    }`}
                   >
-                    <div className="flex items-start">
-                      <span className="text-2xl mr-3">{getSeverityIcon(violation.severity)}</span>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-semibold text-sm uppercase">
+                    <div className="flex items-start gap-3">
+                      <span className="text-xl flex-shrink-0">{getSeverityIcon(violation.severity)}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`text-xs font-bold uppercase tracking-wide ${
+                            violation.severity === 'error' 
+                              ? 'text-red-700 dark:text-red-300' 
+                              : violation.severity === 'warning'
+                              ? 'text-yellow-700 dark:text-yellow-300'
+                              : 'text-blue-700 dark:text-blue-300'
+                          }`}>
                             {violation.severity}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                             {violation.shape}
                           </span>
                         </div>
                         {violation.property && (
-                          <div className="text-sm font-medium mb-1">
-                            속성: <code className="bg-white px-2 py-0.5 rounded">{violation.property}</code>
+                          <div className="text-sm mb-2">
+                            <span className="text-slate-600 dark:text-slate-400">속성:</span>{' '}
+                            <code className="bg-white dark:bg-slate-800 px-2 py-0.5 rounded text-xs font-mono border border-slate-200 dark:border-slate-600">
+                              {violation.property}
+                            </code>
                           </div>
                         )}
                         {violation.value !== undefined && (
-                          <div className="text-sm mb-1">
-                            값: <code className="bg-white px-2 py-0.5 rounded">{JSON.stringify(violation.value)}</code>
+                          <div className="text-sm mb-2">
+                            <span className="text-slate-600 dark:text-slate-400">값:</span>{' '}
+                            <code className="bg-white dark:bg-slate-800 px-2 py-0.5 rounded text-xs font-mono border border-slate-200 dark:border-slate-600">
+                              {JSON.stringify(violation.value)}
+                            </code>
                           </div>
                         )}
-                        <p className="text-sm mt-2">{violation.message}</p>
+                        <p className="text-sm text-slate-700 dark:text-slate-300 mt-2">{violation.message}</p>
                       </div>
                     </div>
                   </div>
@@ -232,38 +258,66 @@ export const DataQualityPanel: React.FC = () => {
           )}
           
           {/* SHACL 규칙 설명 */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h3 className="font-semibold text-blue-800 mb-2">💡 SHACL 제약조건이란?</h3>
-            <p className="text-sm text-blue-700 mb-2">
+          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h3 className="font-semibold text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-2">
+              <span>💡</span> SHACL 제약조건이란?
+            </h3>
+            <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
               SHACL (Shapes Constraint Language)은 RDF 데이터의 품질을 검증하는 W3C 표준입니다.
             </p>
-            <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
-              <li>필수 필드 검증 (minCount, maxCount)</li>
-              <li>데이터 타입 검증 (datatype)</li>
-              <li>값 범위 검증 (minInclusive, maxInclusive)</li>
-              <li>패턴 매칭 (pattern, regex)</li>
-              <li>관계 검증 (class, node)</li>
-              <li>복합 비즈니스 규칙 (SPARQL)</li>
+            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1.5">
+              <li className="flex items-start gap-2">
+                <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
+                <span>필수 필드 검증 (minCount, maxCount)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
+                <span>데이터 타입 검증 (datatype)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
+                <span>값 범위 검증 (minInclusive, maxInclusive)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
+                <span>패턴 매칭 (pattern, regex)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
+                <span>관계 검증 (class, node)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
+                <span>복합 비즈니스 규칙 (SPARQL)</span>
+              </li>
             </ul>
           </div>
         </div>
       )}
       
       {/* 온톨로지 파일 정보 */}
-      <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <h3 className="font-semibold text-gray-800 mb-2">📁 관련 파일</h3>
-        <div className="space-y-2 text-sm">
-          <div>
-            <span className="font-medium">온톨로지:</span>{' '}
-            <code className="bg-white px-2 py-0.5 rounded">ontology/kmtc_booking_ontology.ttl</code>
+      <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700">
+        <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2">
+          <span>📁</span> 관련 파일
+        </h3>
+        <div className="space-y-2.5 text-sm">
+          <div className="flex flex-col gap-1">
+            <span className="font-medium text-slate-600 dark:text-slate-400">온톨로지:</span>
+            <code className="bg-white dark:bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-200 dark:border-slate-600">
+              ontology/kmtc_booking_ontology.ttl
+            </code>
           </div>
-          <div>
-            <span className="font-medium">SHACL 제약조건:</span>{' '}
-            <code className="bg-white px-2 py-0.5 rounded">ontology/kmtc_booking_shacl.ttl</code>
+          <div className="flex flex-col gap-1">
+            <span className="font-medium text-slate-600 dark:text-slate-400">SHACL 제약조건:</span>
+            <code className="bg-white dark:bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-200 dark:border-slate-600">
+              ontology/kmtc_booking_shacl.ttl
+            </code>
           </div>
-          <div>
-            <span className="font-medium">검증 서비스:</span>{' '}
-            <code className="bg-white px-2 py-0.5 rounded">services/shaclValidator.ts</code>
+          <div className="flex flex-col gap-1">
+            <span className="font-medium text-slate-600 dark:text-slate-400">검증 서비스:</span>
+            <code className="bg-white dark:bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-200 dark:border-slate-600">
+              services/shaclValidator.ts
+            </code>
           </div>
         </div>
       </div>
