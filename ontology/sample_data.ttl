@@ -1,0 +1,95 @@
+﻿# KMTC Booking System Sample Data
+@prefix kso: <http://kmtc.com/ontology/booking#> .
+@prefix ksd: <http://kmtc.com/data#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# SHIPPERS
+ksd:SHP001 a kso:Shipper ;
+    kso:shipperId "SHP001" ;
+    kso:shipperName "삼성전자(주)" ;
+    kso:businessType "Electronics" ;
+    kso:customerGrade kso:VIP ;
+    kso:avgMonthlyVolume 520 ;
+    kso:bookingFrequency 4.2 ;
+    kso:churnRisk 0.12 .
+
+ksd:SHP002 a kso:Shipper ;
+    kso:shipperId "SHP002" ;
+    kso:shipperName "LG화학(주)" ;
+    kso:businessType "Chemicals" ;
+    kso:customerGrade kso:GradeA ;
+    kso:avgMonthlyVolume 180 ;
+    kso:bookingFrequency 2.8 ;
+    kso:churnRisk 0.25 .
+
+ksd:SHP003 a kso:Shipper ;
+    kso:shipperId "SHP003" ;
+    kso:shipperName "현대자동차(주)" ;
+    kso:businessType "Auto Parts" ;
+    kso:customerGrade kso:VIP ;
+    kso:avgMonthlyVolume 650 ;
+    kso:bookingFrequency 5.1 ;
+    kso:churnRisk 0.08 .
+
+# ROUTES
+ksd:RT001 a kso:Route ;
+    kso:routeCode "RT001" ;
+    kso:routeName "한중 1항로 (상해)" ;
+    kso:originPort "PUS" ;
+    kso:destinationPort "SHA" ;
+    kso:transitTime 3 ;
+    kso:baseRate 1200.00 .
+
+ksd:RT002 a kso:Route ;
+    kso:routeCode "RT002" ;
+    kso:routeName "한일 항로 (요코하마)" ;
+    kso:originPort "PUS" ;
+    kso:destinationPort "YOK" ;
+    kso:transitTime 2 ;
+    kso:baseRate 980.00 .
+
+ksd:RT003 a kso:Route ;
+    kso:routeCode "RT003" ;
+    kso:routeName "한미 서안 (LA)" ;
+    kso:originPort "PUS" ;
+    kso:destinationPort "LAX" ;
+    kso:transitTime 14 ;
+    kso:baseRate 2800.00 .
+
+# BOOKINGS
+ksd:BK0000000001 a kso:Booking ;
+    kso:bookingId "BK0000000001" ;
+    kso:bookingDate "2024-01-03T10:30:00Z"^^xsd:dateTime ;
+    kso:bookingQty 120 ;
+    kso:containerType "40HC" ;
+    kso:freightRate 1180.00 ;
+    kso:bookingStatus kso:Completed ;
+    kso:bookedBy ksd:SHP001 ;
+    kso:usesRoute ksd:RT001 .
+
+ksd:BK0000000002 a kso:Booking ;
+    kso:bookingId "BK0000000002" ;
+    kso:bookingDate "2024-01-18T14:20:00Z"^^xsd:dateTime ;
+    kso:bookingQty 135 ;
+    kso:containerType "40HC" ;
+    kso:freightRate 1180.00 ;
+    kso:bookingStatus kso:Completed ;
+    kso:bookedBy ksd:SHP001 ;
+    kso:usesRoute ksd:RT001 .
+
+# PREDICTIONS
+ksd:PRED001 a kso:Prediction ;
+    kso:predictedDate "2024-12-15T10:00:00Z"^^xsd:dateTime ;
+    kso:confidence 0.87 ;
+    kso:predictedVolume 145 ;
+    kso:modelVersion "v1.2.3" ;
+    kso:predictionDate "2024-12-08T09:30:00Z"^^xsd:dateTime ;
+    kso:predictedFor ksd:SHP001 .
+
+ksd:PRED002 a kso:Prediction ;
+    kso:predictedDate "2024-12-20T10:00:00Z"^^xsd:dateTime ;
+    kso:confidence 0.82 ;
+    kso:predictedVolume 50 ;
+    kso:modelVersion "v1.2.3" ;
+    kso:predictionDate "2024-12-08T09:30:00Z"^^xsd:dateTime ;
+    kso:predictedFor ksd:SHP002 .

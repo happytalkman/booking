@@ -6,6 +6,7 @@ import HistoricalComparison from '../components/HistoricalComparison';
 import AdvancedSimulator from '../components/AdvancedSimulator';
 import CompetitorBenchmark from '../components/CompetitorBenchmark';
 import MLPredictionPanel from '../components/MLPredictionPanel';
+import { DataQualityPanel } from '../components/DataQualityPanel';
 import { KPI, Language } from '../types';
 
 interface DashboardProps {
@@ -155,6 +156,9 @@ const Dashboard: React.FC<DashboardProps> = ({ lang }) => {
 
       {/* ML Prediction */}
       <MLPredictionPanel lang={lang} />
+
+      {/* Data Quality Panel (SHACL) */}
+      <DataQualityPanel />
 
       {/* AI Booking Recommendations & Risks */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

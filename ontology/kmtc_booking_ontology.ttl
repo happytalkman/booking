@@ -1,0 +1,607 @@
+# KMTC Booking Optimization Ontology
+# Based on Koryo Shipping domain model
+# Enhanced for current system integration
+
+@prefix kso: <http://kmtc.com/ontology/booking#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix time: <http://www.w3.org/2006/time#> .
+
+# ============================================
+# ONTOLOGY METADATA
+# ============================================
+
+<http://kmtc.com/ontology/booking> a owl:Ontology ;
+    rdfs:label "KMTC 부킹 최적화 온톨로지"@ko ,
+               "KMTC Booking Optimization Ontology"@en ;
+    rdfs:comment "AI 기반 부킹 예측 및 최적화를 위한 해운 도메인 온톨로지"@ko ;
+    owl:versionInfo "2.0" ;
+    owl:versionIRI <http://kmtc.com/ontology/booking/2.0> .
+
+# ============================================
+# CORE CLASSES
+# ============================================
+
+## 화주 (Shipper)
+kso:Shipper a owl:Class ;
+    rdfs:label "화주"@ko , "Shipper"@en ;
+    rdfs:comment "해운 서비스를 이용하는 고객사 (예: Samsung Electronics, LG Chem)" .
+
+## 부킹 (Booking)
+kso:Booking a owl:Class ;
+    rdfs:label "부킹"@ko , "Booking"@en ;
+    rdfs:comment "화주의 화물 운송 예약 건" .
+
+## 항로 (Route)
+kso:Route a owl:Class ;
+    rdfs:label "항로"@ko , "Route"@en ;
+    rdfs:comment "선박 운항 경로 (예: 한국-LA, 한국-유럽)" .
+
+## 예측 (Prediction)
+kso:Prediction a owl:Class ;
+    rdfs:label "예측"@ko , "Prediction"@en ;
+    rdfs:comment "AI 모델이 생성한 다음 부킹일 예측" .
+
+## 알림 (Alert)
+kso:Alert a owl:Class ;
+    rdfs:label "알림"@ko , "Alert"@en ;
+    rdfs:comment "영업사원에게 발송되는 예측 기반 알림" .
+
+## 계약 (Contract)
+kso:Contract a owl:Class ;
+    rdfs:label "계약"@ko , "Contract"@en ;
+    rdfs:comment "화주와의 장기 운송 계약 (COA/SPOT)" .
+
+## 선박 (Vessel)
+kso:Vessel a owl:Class ;
+    rdfs:label "선박"@ko , "Vessel"@en ;
+    rdfs:comment "컨테이너 운반 선박" .
+
+## 항차 (Voyage)
+kso:Voyage a owl:Class ;
+    rdfs:label "항차"@ko , "Voyage"@en ;
+    rdfs:comment "특정 선박의 특정 항로 운항" .
+
+## 경쟁사 (Competitor)
+kso:Competitor a owl:Class ;
+    rdfs:label "경쟁사"@ko , "Competitor"@en ;
+    rdfs:comment "시장 경쟁 선사 (Maersk, MSC, CMA CGM 등)" .
+
+## 시장 지수 (MarketIndex)
+kso:MarketIndex a owl:Class ;
+    rdfs:label "시장지수"@ko , "Market Index"@en ;
+    rdfs:comment "해운 시장 지표 (SCFI, BDI 등)" .
+
+## 리스크 (Risk)
+kso:Risk a owl:Class ;
+    rdfs:label "리스크"@ko , "Risk"@en ;
+    rdfs:comment "부킹 관련 리스크 요인" .
+
+# ============================================
+# DATATYPE PROPERTIES
+# ============================================
+
+## Shipper Properties
+kso:shipperId a owl:DatatypeProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range xsd:string ;
+    rdfs:label "화주코드"@ko , "Shipper ID"@en .
+
+kso:shipperName a owl:DatatypeProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range xsd:string ;
+    rdfs:label "화주명"@ko , "Shipper Name"@en .
+
+kso:businessType a owl:DatatypeProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range xsd:string ;
+    rdfs:label "업종"@ko , "Business Type"@en ;
+    rdfs:comment "예: Electronics, Auto Parts, Chemicals" .
+
+kso:customerGrade a owl:DatatypeProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range kso:CustomerGrade ;
+    rdfs:label "고객등급"@ko , "Customer Grade"@en .
+
+kso:avgMonthlyVolume a owl:DatatypeProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range xsd:integer ;
+    rdfs:label "월평균물량"@ko , "Avg Monthly Volume"@en ;
+    rdfs:comment "TEU 단위" .
+
+kso:bookingFrequency a owl:DatatypeProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range xsd:double ;
+    rdfs:label "부킹빈도"@ko , "Booking Frequency"@en ;
+    rdfs:comment "월 평균 부킹 횟수" .
+
+kso:churnRisk a owl:DatatypeProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range xsd:double ;
+    rdfs:label "이탈위험도"@ko , "Churn Risk"@en ;
+    rdfs:comment "0.0 ~ 1.0 사이 값" .
+
+## Booking Properties
+kso:bookingId a owl:DatatypeProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range xsd:string ;
+    rdfs:label "부킹번호"@ko , "Booking ID"@en .
+
+kso:bookingDate a owl:DatatypeProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "부킹일자"@ko , "Booking Date"@en .
+
+kso:bookingQty a owl:DatatypeProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range xsd:integer ;
+    rdfs:label "부킹수량"@ko , "Booking Quantity"@en .
+
+kso:containerType a owl:DatatypeProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range xsd:string ;
+    rdfs:label "컨테이너타입"@ko , "Container Type"@en ;
+    rdfs:comment "20GP, 40GP, 40HC, 45HC, RF" .
+
+kso:freightRate a owl:DatatypeProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "운임단가"@ko , "Freight Rate"@en ;
+    rdfs:comment "USD per FEU" .
+
+kso:bookingStatus a owl:DatatypeProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range kso:BookingStatus ;
+    rdfs:label "부킹상태"@ko , "Booking Status"@en .
+
+kso:cancellationReason a owl:DatatypeProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range xsd:string ;
+    rdfs:label "취소사유"@ko , "Cancellation Reason"@en .
+
+## Prediction Properties
+kso:predictedDate a owl:DatatypeProperty ;
+    rdfs:domain kso:Prediction ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "예상부킹일"@ko , "Predicted Date"@en .
+
+kso:confidence a owl:DatatypeProperty ;
+    rdfs:domain kso:Prediction ;
+    rdfs:range xsd:double ;
+    rdfs:label "신뢰도"@ko , "Confidence"@en ;
+    rdfs:comment "0.0 ~ 1.0 사이 값" .
+
+kso:predictedVolume a owl:DatatypeProperty ;
+    rdfs:domain kso:Prediction ;
+    rdfs:range xsd:integer ;
+    rdfs:label "예상물량"@ko , "Predicted Volume"@en .
+
+kso:modelVersion a owl:DatatypeProperty ;
+    rdfs:domain kso:Prediction ;
+    rdfs:range xsd:string ;
+    rdfs:label "모델버전"@ko , "Model Version"@en .
+
+kso:predictionDate a owl:DatatypeProperty ;
+    rdfs:domain kso:Prediction ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "예측생성일"@ko , "Prediction Date"@en .
+
+## Route Properties
+kso:routeCode a owl:DatatypeProperty ;
+    rdfs:domain kso:Route ;
+    rdfs:range xsd:string ;
+    rdfs:label "항로코드"@ko , "Route Code"@en .
+
+kso:routeName a owl:DatatypeProperty ;
+    rdfs:domain kso:Route ;
+    rdfs:range xsd:string ;
+    rdfs:label "항로명"@ko , "Route Name"@en .
+
+kso:originPort a owl:DatatypeProperty ;
+    rdfs:domain kso:Route ;
+    rdfs:range xsd:string ;
+    rdfs:label "출발항"@ko , "Origin Port"@en .
+
+kso:destinationPort a owl:DatatypeProperty ;
+    rdfs:domain kso:Route ;
+    rdfs:range xsd:string ;
+    rdfs:label "도착항"@ko , "Destination Port"@en .
+
+kso:transitTime a owl:DatatypeProperty ;
+    rdfs:domain kso:Route ;
+    rdfs:range xsd:integer ;
+    rdfs:label "운항소요일"@ko , "Transit Time"@en ;
+    rdfs:comment "일(days) 단위" .
+
+kso:peakSeason a owl:DatatypeProperty ;
+    rdfs:domain kso:Route ;
+    rdfs:range xsd:string ;
+    rdfs:label "성수기"@ko , "Peak Season"@en ;
+    rdfs:comment "예: Q3-Q4" .
+
+kso:baseRate a owl:DatatypeProperty ;
+    rdfs:domain kso:Route ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "기본운임"@ko , "Base Rate"@en .
+
+## Alert Properties
+kso:alertType a owl:DatatypeProperty ;
+    rdfs:domain kso:Alert ;
+    rdfs:range xsd:string ;
+    rdfs:label "알림유형"@ko , "Alert Type"@en ;
+    rdfs:comment "rate_drop, competitor, risk, opportunity" .
+
+kso:alertPriority a owl:DatatypeProperty ;
+    rdfs:domain kso:Alert ;
+    rdfs:range xsd:string ;
+    rdfs:label "우선순위"@ko , "Priority"@en ;
+    rdfs:comment "high, medium, low" .
+
+kso:alertMessage a owl:DatatypeProperty ;
+    rdfs:domain kso:Alert ;
+    rdfs:range xsd:string ;
+    rdfs:label "알림메시지"@ko , "Alert Message"@en .
+
+kso:isRead a owl:DatatypeProperty ;
+    rdfs:domain kso:Alert ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "읽음여부"@ko , "Is Read"@en .
+
+## Competitor Properties
+kso:competitorName a owl:DatatypeProperty ;
+    rdfs:domain kso:Competitor ;
+    rdfs:range xsd:string ;
+    rdfs:label "경쟁사명"@ko , "Competitor Name"@en .
+
+kso:marketShare a owl:DatatypeProperty ;
+    rdfs:domain kso:Competitor ;
+    rdfs:range xsd:double ;
+    rdfs:label "시장점유율"@ko , "Market Share"@en .
+
+kso:onTimeRate a owl:DatatypeProperty ;
+    rdfs:domain kso:Competitor ;
+    rdfs:range xsd:double ;
+    rdfs:label "정시도착률"@ko , "On-Time Rate"@en .
+
+## Risk Properties
+kso:riskType a owl:DatatypeProperty ;
+    rdfs:domain kso:Risk ;
+    rdfs:range xsd:string ;
+    rdfs:label "리스크유형"@ko , "Risk Type"@en .
+
+kso:riskLevel a owl:DatatypeProperty ;
+    rdfs:domain kso:Risk ;
+    rdfs:range xsd:string ;
+    rdfs:label "리스크레벨"@ko , "Risk Level"@en ;
+    rdfs:comment "high, medium, low" .
+
+kso:riskScore a owl:DatatypeProperty ;
+    rdfs:domain kso:Risk ;
+    rdfs:range xsd:double ;
+    rdfs:label "리스크점수"@ko , "Risk Score"@en .
+
+# ============================================
+# OBJECT PROPERTIES (Relationships)
+# ============================================
+
+## Shipper → Booking (1:N)
+kso:hasBooking a owl:ObjectProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range kso:Booking ;
+    rdfs:label "부킹이력"@ko , "has Booking"@en ;
+    owl:inverseOf kso:bookedBy .
+
+kso:bookedBy a owl:ObjectProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range kso:Shipper ;
+    rdfs:label "부킹화주"@ko , "booked By"@en .
+
+## Shipper → Prediction (1:N)
+kso:hasPrediction a owl:ObjectProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range kso:Prediction ;
+    rdfs:label "예측결과"@ko , "has Prediction"@en ;
+    owl:inverseOf kso:predictedFor .
+
+kso:predictedFor a owl:ObjectProperty ;
+    rdfs:domain kso:Prediction ;
+    rdfs:range kso:Shipper ;
+    rdfs:label "예측대상화주"@ko , "predicted For"@en .
+
+## Booking → Route (N:1)
+kso:usesRoute a owl:ObjectProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range kso:Route ;
+    rdfs:label "이용항로"@ko , "uses Route"@en .
+
+## Booking → Booking (TIME_NEXT relationship)
+kso:nextBooking a owl:ObjectProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range kso:Booking ;
+    rdfs:label "다음부킹"@ko , "next Booking"@en ;
+    rdfs:comment "시간적 순서 관계 (TIME_NEXT)" ;
+    a owl:TransitiveProperty .
+
+kso:previousBooking a owl:ObjectProperty ;
+    rdfs:domain kso:Booking ;
+    rdfs:range kso:Booking ;
+    rdfs:label "이전부킹"@ko , "previous Booking"@en ;
+    owl:inverseOf kso:nextBooking .
+
+## Prediction → Alert (1:N)
+kso:triggersAlert a owl:ObjectProperty ;
+    rdfs:domain kso:Prediction ;
+    rdfs:range kso:Alert ;
+    rdfs:label "발생알림"@ko , "triggers Alert"@en .
+
+## Shipper → Contract (1:N)
+kso:hasContract a owl:ObjectProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range kso:Contract ;
+    rdfs:label "계약이력"@ko , "has Contract"@en .
+
+## Voyage → Route (N:1)
+kso:operatesOn a owl:ObjectProperty ;
+    rdfs:domain kso:Voyage ;
+    rdfs:range kso:Route ;
+    rdfs:label "운항항로"@ko , "operates On"@en .
+
+## Voyage → Vessel (N:1)
+kso:operatedBy a owl:ObjectProperty ;
+    rdfs:domain kso:Voyage ;
+    rdfs:range kso:Vessel ;
+    rdfs:label "운항선박"@ko , "operated By"@en .
+
+## Route → Competitor (N:N)
+kso:hasCompetitor a owl:ObjectProperty ;
+    rdfs:domain kso:Route ;
+    rdfs:range kso:Competitor ;
+    rdfs:label "경쟁선사"@ko , "has Competitor"@en .
+
+## Shipper → Risk (1:N)
+kso:hasRisk a owl:ObjectProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range kso:Risk ;
+    rdfs:label "리스크"@ko , "has Risk"@en .
+
+## Route → MarketIndex (N:N)
+kso:affectedBy a owl:ObjectProperty ;
+    rdfs:domain kso:Route ;
+    rdfs:range kso:MarketIndex ;
+    rdfs:label "영향받는지수"@ko , "affected By"@en .
+
+# ============================================
+# ENUMERATIONS
+# ============================================
+
+## Customer Grade
+kso:CustomerGrade a owl:Class ;
+    owl:oneOf (kso:VIP kso:GradeA kso:GradeB kso:GradeC) .
+
+kso:VIP a kso:CustomerGrade ;
+    rdfs:label "VIP"@ko , "VIP"@en .
+
+kso:GradeA a kso:CustomerGrade ;
+    rdfs:label "A등급"@ko , "Grade A"@en .
+
+kso:GradeB a kso:CustomerGrade ;
+    rdfs:label "B등급"@ko , "Grade B"@en .
+
+kso:GradeC a kso:CustomerGrade ;
+    rdfs:label "C등급"@ko , "Grade C"@en .
+
+## Booking Status
+kso:BookingStatus a owl:Class ;
+    owl:oneOf (kso:Confirmed kso:Pending kso:Cancelled kso:Completed kso:NoShow) .
+
+kso:Confirmed a kso:BookingStatus ;
+    rdfs:label "확정"@ko , "Confirmed"@en .
+
+kso:Pending a kso:BookingStatus ;
+    rdfs:label "대기"@ko , "Pending"@en .
+
+kso:Cancelled a kso:BookingStatus ;
+    rdfs:label "취소"@ko , "Cancelled"@en .
+
+kso:Completed a kso:BookingStatus ;
+    rdfs:label "완료"@ko , "Completed"@en .
+
+kso:NoShow a kso:BookingStatus ;
+    rdfs:label "노쇼"@ko , "No Show"@en .
+
+## Contract Type
+kso:ContractType a owl:Class ;
+    owl:oneOf (kso:COA kso:SPOT) .
+
+kso:COA a kso:ContractType ;
+    rdfs:label "장기계약"@ko , "Contract of Affreightment"@en .
+
+kso:SPOT a kso:ContractType ;
+    rdfs:label "스팟계약"@ko , "Spot Contract"@en .
+
+## Container Type
+kso:ContainerType a owl:Class ;
+    owl:oneOf (kso:GP20 kso:GP40 kso:HC40 kso:HC45 kso:RF) .
+
+kso:GP20 a kso:ContainerType ;
+    rdfs:label "20피트 일반"@ko , "20ft General Purpose"@en .
+
+kso:GP40 a kso:ContainerType ;
+    rdfs:label "40피트 일반"@ko , "40ft General Purpose"@en .
+
+kso:HC40 a kso:ContainerType ;
+    rdfs:label "40피트 하이큐브"@ko , "40ft High Cube"@en .
+
+kso:HC45 a kso:ContainerType ;
+    rdfs:label "45피트 하이큐브"@ko , "45ft High Cube"@en .
+
+kso:RF a kso:ContainerType ;
+    rdfs:label "냉동컨테이너"@ko , "Reefer Container"@en .
+
+# ============================================
+# INFERENCE RULES (OWL2 Reasoning)
+# ============================================
+
+## Rule 1: VIP 고객 자동 분류
+## 월평균 500 TEU 이상 → VIP
+kso:VIPShipper a owl:Class ;
+    rdfs:subClassOf kso:Shipper ;
+    owl:equivalentClass [
+        a owl:Restriction ;
+        owl:onProperty kso:avgMonthlyVolume ;
+        owl:someValuesFrom [
+            a rdfs:Datatype ;
+            owl:onDatatype xsd:integer ;
+            owl:withRestrictions ([xsd:minInclusive 500])
+        ]
+    ] ;
+    rdfs:label "VIP화주"@ko , "VIP Shipper"@en .
+
+## Rule 2: 정기부킹 패턴
+## 부킹 빈도 2.0 이상 (월 2회 이상) → 정기고객
+kso:RegularShipper a owl:Class ;
+    rdfs:subClassOf kso:Shipper ;
+    owl:equivalentClass [
+        a owl:Restriction ;
+        owl:onProperty kso:bookingFrequency ;
+        owl:someValuesFrom [
+            a rdfs:Datatype ;
+            owl:onDatatype xsd:double ;
+            owl:withRestrictions ([xsd:minInclusive 2.0])
+        ]
+    ] ;
+    rdfs:label "정기화주"@ko , "Regular Shipper"@en .
+
+## Rule 3: 고신뢰도 예측
+## 신뢰도 0.85 이상 → HighConfidencePrediction
+kso:HighConfidencePrediction a owl:Class ;
+    rdfs:subClassOf kso:Prediction ;
+    owl:equivalentClass [
+        a owl:Restriction ;
+        owl:onProperty kso:confidence ;
+        owl:someValuesFrom [
+            a rdfs:Datatype ;
+            owl:onDatatype xsd:double ;
+            owl:withRestrictions ([xsd:minInclusive 0.85])
+        ]
+    ] ;
+    rdfs:label "고신뢰도예측"@ko , "High Confidence Prediction"@en .
+
+## Rule 4: 이탈 위험 고객
+## 이탈위험도 0.7 이상 → ChurnRiskShipper
+kso:ChurnRiskShipper a owl:Class ;
+    rdfs:subClassOf kso:Shipper ;
+    owl:equivalentClass [
+        a owl:Restriction ;
+        owl:onProperty kso:churnRisk ;
+        owl:someValuesFrom [
+            a rdfs:Datatype ;
+            owl:onDatatype xsd:double ;
+            owl:withRestrictions ([xsd:minInclusive 0.7])
+        ]
+    ] ;
+    rdfs:label "이탈위험화주"@ko , "Churn Risk Shipper"@en .
+
+## Rule 5: 고위험 부킹
+## 취소율이 높은 항로의 부킹
+kso:HighRiskBooking a owl:Class ;
+    rdfs:subClassOf kso:Booking ;
+    rdfs:label "고위험부킹"@ko , "High Risk Booking"@en .
+
+## Rule 6: 우량 고객
+## VIP이면서 이탈위험 낮음 → PremiumShipper
+kso:PremiumShipper a owl:Class ;
+    rdfs:subClassOf kso:Shipper ;
+    owl:intersectionOf (
+        kso:VIPShipper
+        [
+            a owl:Restriction ;
+            owl:onProperty kso:churnRisk ;
+            owl:someValuesFrom [
+                a rdfs:Datatype ;
+                owl:onDatatype xsd:double ;
+                owl:withRestrictions ([xsd:maxInclusive 0.3])
+            ]
+        ]
+    ) ;
+    rdfs:label "우량화주"@ko , "Premium Shipper"@en .
+
+# ============================================
+# CARDINALITY CONSTRAINTS
+# ============================================
+
+## Shipper must have at least one booking
+kso:Shipper rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty kso:hasBooking ;
+    owl:minCardinality 1
+] .
+
+## Booking must have exactly one shipper
+kso:Booking rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty kso:bookedBy ;
+    owl:cardinality 1
+] .
+
+## Booking must have exactly one route
+kso:Booking rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty kso:usesRoute ;
+    owl:cardinality 1
+] .
+
+# ============================================
+# PROPERTY CHAINS (Complex Reasoning)
+# ============================================
+
+## Shipper → Booking → Route (간접 관계)
+kso:preferredRoute a owl:ObjectProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range kso:Route ;
+    rdfs:label "선호항로"@ko , "preferred Route"@en ;
+    owl:propertyChainAxiom (kso:hasBooking kso:usesRoute) .
+
+## Shipper → Booking → Booking (부킹 체인)
+kso:bookingSequence a owl:ObjectProperty ;
+    rdfs:domain kso:Shipper ;
+    rdfs:range kso:Booking ;
+    rdfs:label "부킹순서"@ko , "booking Sequence"@en ;
+    owl:propertyChainAxiom (kso:hasBooking kso:nextBooking) .
+
+# ============================================
+# DISJOINT CLASSES
+# ============================================
+
+## Booking statuses are mutually exclusive
+[] a owl:AllDisjointClasses ;
+    owl:members (kso:Confirmed kso:Pending kso:Cancelled kso:Completed kso:NoShow) .
+
+## Contract types are mutually exclusive
+[] a owl:AllDisjointClasses ;
+    owl:members (kso:COA kso:SPOT) .
+
+# ============================================
+# FUNCTIONAL PROPERTIES
+# ============================================
+
+## Each booking has exactly one booking date
+kso:bookingDate a owl:FunctionalProperty .
+
+## Each booking has exactly one booking number
+kso:bookingId a owl:FunctionalProperty .
+
+## Each shipper has exactly one shipper ID
+kso:shipperId a owl:FunctionalProperty .
+
+# ============================================
+# INVERSE FUNCTIONAL PROPERTIES
+# ============================================
+
+## Booking ID uniquely identifies a booking
+kso:bookingId a owl:InverseFunctionalProperty .
+
+## Shipper ID uniquely identifies a shipper
+kso:shipperId a owl:InverseFunctionalProperty .

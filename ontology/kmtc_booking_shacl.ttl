@@ -1,0 +1,640 @@
+# KMTC Booking Optimization SHACL Constraints
+# Data Quality Validation for KMTC Booking System
+# Based on KMTC Ontology v2.0
+
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix kso: <http://kmtc.com/ontology/booking#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ============================================
+# SHIPPER SHAPE (화주 데이터 품질)
+# ============================================
+
+kso:ShipperShape a sh:NodeShape ;
+    sh:targetClass kso:Shipper ;
+    sh:name "화주 데이터 검증" ;
+    sh:description "화주 정보의 필수 항목 및 형식 검증" ;
+    
+    # 화주코드 (필수, 고유, 형식: SHP + 3자리 이상 숫자)
+    sh:property [
+        sh:path kso:shipperId ;
+        sh:name "화주코드" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^SHP[0-9]{3,}$" ;
+        sh:message "화주코드는 필수이며 'SHP'로 시작하고 3자리 이상 숫자여야 합니다 (예: SHP001, SHP1234)" ;
+    ] ;
+    
+    # 화주명 (필수)
+    sh:property [
+        sh:path kso:shipperName ;
+        sh:name "화주명" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 2 ;
+        sh:maxLength 200 ;
+        sh:message "화주명은 필수이며 2~200자 사이여야 합니다" ;
+    ] ;
+    
+    # 업종 (선택, 제한된 값)
+    sh:property [
+        sh:path kso:businessType ;
+        sh:name "업종" ;
+        sh:datatype xsd:string ;
+        sh:in ("Electronics" "Auto Parts" "Chemicals" "Textiles" "Food" "Machinery" "Furniture" "Other") ;
+        sh:message "업종은 정의된 카테고리 중 하나여야 합니다" ;
+    ] ;
+    
+    # 월평균물량 (선택, 0 이상)
+    sh:property [
+        sh:path kso:avgMonthlyVolume ;
+        sh:name "월평균물량" ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 100000 ;
+        sh:message "월평균물량은 0~100,000 TEU 사이여야 합니다" ;
+    ] ;
+    
+    # 부킹빈도 (선택, 0 이상)
+    sh:property [
+        sh:path kso:bookingFrequency ;
+        sh:name "부킹빈도" ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 100.0 ;
+        sh:message "부킹빈도는 0~100 사이여야 합니다" ;
+    ] ;
+    
+    # 이탈위험도 (선택, 0.0~1.0)
+    sh:property [
+        sh:path kso:churnRisk ;
+        sh:name "이탈위험도" ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:message "이탈위험도는 0.0~1.0 사이여야 합니다" ;
+    ] ;
+    
+    # 고객등급 (선택, 제한된 값)
+    sh:property [
+        sh:path kso:customerGrade ;
+        sh:name "고객등급" ;
+        sh:in (kso:VIP kso:GradeA kso:GradeB kso:GradeC) ;
+        sh:message "고객등급은 VIP, GradeA, GradeB, GradeC 중 하나여야 합니다" ;
+    ] .
+
+# ============================================
+# BOOKING SHAPE (부킹 데이터 품질)
+# ============================================
+
+kso:BookingShape a sh:NodeShape ;
+    sh:targetClass kso:Booking ;
+    sh:name "부킹 데이터 검증" ;
+    sh:description "부킹 정보의 필수 항목 및 비즈니스 규칙 검증" ;
+    
+    # 부킹번호 (필수, 고유, 형식: BK + 10자리 숫자)
+    sh:property [
+        sh:path kso:bookingId ;
+        sh:name "부킹번호" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^BK[0-9]{10}$" ;
+        sh:message "부킹번호는 필수이며 'BK'로 시작하고 10자리 숫자여야 합니다 (예: BK0000000001)" ;
+    ] ;
+    
+    # 부킹일자 (필수)
+    sh:property [
+        sh:path kso:bookingDate ;
+        sh:name "부킹일자" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "부킹일자는 필수입니다" ;
+    ] ;
+    
+    # 부킹수량 (필수, 1~10,000 TEU)
+    sh:property [
+        sh:path kso:bookingQty ;
+        sh:name "부킹수량" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:maxInclusive 10000 ;
+        sh:message "부킹수량은 1~10,000 TEU 사이여야 합니다" ;
+    ] ;
+    
+    # 컨테이너타입 (필수, 제한된 값)
+    sh:property [
+        sh:path kso:containerType ;
+        sh:name "컨테이너타입" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:in ("20GP" "40GP" "40HC" "45HC" "RF") ;
+        sh:message "컨테이너타입은 20GP, 40GP, 40HC, 45HC, RF 중 하나여야 합니다" ;
+    ] ;
+    
+    # 운임단가 (필수, 양수)
+    sh:property [
+        sh:path kso:freightRate ;
+        sh:name "운임단가" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minExclusive 0.0 ;
+        sh:maxInclusive 50000.0 ;
+        sh:message "운임단가는 0보다 크고 50,000 USD 이하여야 합니다" ;
+    ] ;
+    
+    # 부킹상태 (필수, 제한된 값)
+    sh:property [
+        sh:path kso:bookingStatus ;
+        sh:name "부킹상태" ;
+        sh:minCount 1 ;
+        sh:in (kso:Confirmed kso:Pending kso:Cancelled kso:Completed kso:NoShow) ;
+        sh:message "부킹상태는 Confirmed, Pending, Cancelled, Completed, NoShow 중 하나여야 합니다" ;
+    ] ;
+    
+    # 부킹화주 (필수, 정확히 1명)
+    sh:property [
+        sh:path kso:bookedBy ;
+        sh:name "부킹화주" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class kso:Shipper ;
+        sh:message "부킹은 정확히 1명의 화주와 연결되어야 합니다" ;
+    ] ;
+    
+    # 이용항로 (필수, 정확히 1개)
+    sh:property [
+        sh:path kso:usesRoute ;
+        sh:name "이용항로" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class kso:Route ;
+        sh:message "부킹은 정확히 1개의 항로와 연결되어야 합니다" ;
+    ] ;
+    
+    # 취소사유 (취소 상태일 때만 필수)
+    sh:sparql [
+        sh:message "부킹이 취소 상태일 때는 취소사유가 필수입니다" ;
+        sh:prefixes kso: ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this kso:bookingStatus kso:Cancelled .
+                FILTER NOT EXISTS { $this kso:cancellationReason ?reason }
+            }
+        """ ;
+    ] .
+
+# ============================================
+# PREDICTION SHAPE (예측 데이터 품질)
+# ============================================
+
+kso:PredictionShape a sh:NodeShape ;
+    sh:targetClass kso:Prediction ;
+    sh:name "예측 데이터 검증" ;
+    sh:description "AI 예측 결과의 신뢰성 및 형식 검증" ;
+    
+    # 예상부킹일 (필수, 미래 날짜)
+    sh:property [
+        sh:path kso:predictedDate ;
+        sh:name "예상부킹일" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "예상부킹일은 필수입니다" ;
+    ] ;
+    
+    # 신뢰도 (필수, 0.0~1.0)
+    sh:property [
+        sh:path kso:confidence ;
+        sh:name "신뢰도" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:message "신뢰도는 0.0~1.0 사이여야 합니다" ;
+    ] ;
+    
+    # 예상물량 (선택, 양수)
+    sh:property [
+        sh:path kso:predictedVolume ;
+        sh:name "예상물량" ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:maxInclusive 10000 ;
+        sh:message "예상물량은 1~10,000 TEU 사이여야 합니다" ;
+    ] ;
+    
+    # 모델버전 (필수)
+    sh:property [
+        sh:path kso:modelVersion ;
+        sh:name "모델버전" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^v[0-9]+\\.[0-9]+\\.[0-9]+$" ;
+        sh:message "모델버전은 필수이며 'v1.0.0' 형식이어야 합니다" ;
+    ] ;
+    
+    # 예측생성일 (필수)
+    sh:property [
+        sh:path kso:predictionDate ;
+        sh:name "예측생성일" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "예측생성일은 필수입니다" ;
+    ] ;
+    
+    # 예측대상화주 (필수, 정확히 1명)
+    sh:property [
+        sh:path kso:predictedFor ;
+        sh:name "예측대상화주" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class kso:Shipper ;
+        sh:message "예측은 정확히 1명의 화주와 연결되어야 합니다" ;
+    ] ;
+    
+    # 예측일이 생성일보다 미래인지 검증
+    sh:sparql [
+        sh:message "예상부킹일은 예측생성일보다 미래여야 합니다" ;
+        sh:prefixes kso: ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this kso:predictedDate ?predicted ;
+                      kso:predictionDate ?created .
+                FILTER (?predicted <= ?created)
+            }
+        """ ;
+    ] .
+
+# ============================================
+# ROUTE SHAPE (항로 데이터 품질)
+# ============================================
+
+kso:RouteShape a sh:NodeShape ;
+    sh:targetClass kso:Route ;
+    sh:name "항로 데이터 검증" ;
+    sh:description "항로 정보의 필수 항목 및 형식 검증" ;
+    
+    # 항로코드 (필수, 고유, 형식: RT + 3자리 숫자)
+    sh:property [
+        sh:path kso:routeCode ;
+        sh:name "항로코드" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^RT[0-9]{3}$" ;
+        sh:message "항로코드는 필수이며 'RT'로 시작하고 3자리 숫자여야 합니다 (예: RT001)" ;
+    ] ;
+    
+    # 항로명 (필수)
+    sh:property [
+        sh:path kso:routeName ;
+        sh:name "항로명" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 3 ;
+        sh:maxLength 100 ;
+        sh:message "항로명은 필수이며 3~100자 사이여야 합니다" ;
+    ] ;
+    
+    # 출발항 (필수, 3자리 코드)
+    sh:property [
+        sh:path kso:originPort ;
+        sh:name "출발항" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^[A-Z]{3}$" ;
+        sh:message "출발항은 필수이며 3자리 대문자 코드여야 합니다 (예: ICN, PUS)" ;
+    ] ;
+    
+    # 도착항 (필수, 3자리 코드)
+    sh:property [
+        sh:path kso:destinationPort ;
+        sh:name "도착항" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^[A-Z]{3}$" ;
+        sh:message "도착항은 필수이며 3자리 대문자 코드여야 합니다 (예: LAX, SIN)" ;
+    ] ;
+    
+    # 운항소요일 (필수, 1~90일)
+    sh:property [
+        sh:path kso:transitTime ;
+        sh:name "운항소요일" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:maxInclusive 90 ;
+        sh:message "운항소요일은 1~90일 사이여야 합니다" ;
+    ] ;
+    
+    # 기본운임 (필수, 양수)
+    sh:property [
+        sh:path kso:baseRate ;
+        sh:name "기본운임" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minExclusive 0.0 ;
+        sh:maxInclusive 50000.0 ;
+        sh:message "기본운임은 0보다 크고 50,000 USD 이하여야 합니다" ;
+    ] ;
+    
+    # 출발항과 도착항이 다른지 검증
+    sh:sparql [
+        sh:message "출발항과 도착항은 달라야 합니다" ;
+        sh:prefixes kso: ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this kso:originPort ?origin ;
+                      kso:destinationPort ?dest .
+                FILTER (?origin = ?dest)
+            }
+        """ ;
+    ] .
+
+# ============================================
+# ALERT SHAPE (알림 데이터 품질)
+# ============================================
+
+kso:AlertShape a sh:NodeShape ;
+    sh:targetClass kso:Alert ;
+    sh:name "알림 데이터 검증" ;
+    sh:description "알림 정보의 필수 항목 및 형식 검증" ;
+    
+    # 알림유형 (필수, 제한된 값)
+    sh:property [
+        sh:path kso:alertType ;
+        sh:name "알림유형" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:in ("rate_drop" "competitor" "risk" "opportunity") ;
+        sh:message "알림유형은 rate_drop, competitor, risk, opportunity 중 하나여야 합니다" ;
+    ] ;
+    
+    # 우선순위 (필수, 제한된 값)
+    sh:property [
+        sh:path kso:alertPriority ;
+        sh:name "우선순위" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:in ("high" "medium" "low") ;
+        sh:message "우선순위는 high, medium, low 중 하나여야 합니다" ;
+    ] ;
+    
+    # 알림메시지 (필수)
+    sh:property [
+        sh:path kso:alertMessage ;
+        sh:name "알림메시지" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 10 ;
+        sh:maxLength 500 ;
+        sh:message "알림메시지는 필수이며 10~500자 사이여야 합니다" ;
+    ] ;
+    
+    # 읽음여부 (필수)
+    sh:property [
+        sh:path kso:isRead ;
+        sh:name "읽음여부" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:boolean ;
+        sh:message "읽음여부는 필수입니다" ;
+    ] .
+
+# ============================================
+# COMPETITOR SHAPE (경쟁사 데이터 품질)
+# ============================================
+
+kso:CompetitorShape a sh:NodeShape ;
+    sh:targetClass kso:Competitor ;
+    sh:name "경쟁사 데이터 검증" ;
+    sh:description "경쟁사 정보의 필수 항목 및 형식 검증" ;
+    
+    # 경쟁사명 (필수)
+    sh:property [
+        sh:path kso:competitorName ;
+        sh:name "경쟁사명" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 2 ;
+        sh:maxLength 100 ;
+        sh:message "경쟁사명은 필수이며 2~100자 사이여야 합니다" ;
+    ] ;
+    
+    # 시장점유율 (선택, 0.0~1.0)
+    sh:property [
+        sh:path kso:marketShare ;
+        sh:name "시장점유율" ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:message "시장점유율은 0.0~1.0 사이여야 합니다" ;
+    ] ;
+    
+    # 정시도착률 (선택, 0.0~1.0)
+    sh:property [
+        sh:path kso:onTimeRate ;
+        sh:name "정시도착률" ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:message "정시도착률은 0.0~1.0 사이여야 합니다" ;
+    ] .
+
+# ============================================
+# RISK SHAPE (리스크 데이터 품질)
+# ============================================
+
+kso:RiskShape a sh:NodeShape ;
+    sh:targetClass kso:Risk ;
+    sh:name "리스크 데이터 검증" ;
+    sh:description "리스크 정보의 필수 항목 및 형식 검증" ;
+    
+    # 리스크유형 (필수)
+    sh:property [
+        sh:path kso:riskType ;
+        sh:name "리스크유형" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:in ("churn" "payment" "compliance" "operational" "market") ;
+        sh:message "리스크유형은 churn, payment, compliance, operational, market 중 하나여야 합니다" ;
+    ] ;
+    
+    # 리스크레벨 (필수)
+    sh:property [
+        sh:path kso:riskLevel ;
+        sh:name "리스크레벨" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:in ("high" "medium" "low") ;
+        sh:message "리스크레벨은 high, medium, low 중 하나여야 합니다" ;
+    ] ;
+    
+    # 리스크점수 (필수, 0.0~1.0)
+    sh:property [
+        sh:path kso:riskScore ;
+        sh:name "리스크점수" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:message "리스크점수는 0.0~1.0 사이여야 합니다" ;
+    ] .
+
+# ============================================
+# CONTRACT SHAPE (계약 데이터 품질)
+# ============================================
+
+kso:ContractShape a sh:NodeShape ;
+    sh:targetClass kso:Contract ;
+    sh:name "계약 데이터 검증" ;
+    sh:description "계약 정보의 필수 항목 및 비즈니스 규칙 검증" ;
+    
+    # 계약번호 (필수, 형식: CT + 8자리 숫자)
+    sh:property [
+        sh:path kso:contractId ;
+        sh:name "계약번호" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^CT[0-9]{8}$" ;
+        sh:message "계약번호는 필수이며 'CT'로 시작하고 8자리 숫자여야 합니다 (예: CT00000001)" ;
+    ] ;
+    
+    # 계약시작일 (필수)
+    sh:property [
+        sh:path kso:contractStartDate ;
+        sh:name "계약시작일" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:date ;
+        sh:message "계약시작일은 필수입니다" ;
+    ] ;
+    
+    # 계약종료일 (필수)
+    sh:property [
+        sh:path kso:contractEndDate ;
+        sh:name "계약종료일" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:date ;
+        sh:message "계약종료일은 필수입니다" ;
+    ] ;
+    
+    # 계약종료일이 시작일보다 미래인지 검증
+    sh:sparql [
+        sh:message "계약종료일은 계약시작일보다 미래여야 합니다" ;
+        sh:prefixes kso: ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this kso:contractStartDate ?start ;
+                      kso:contractEndDate ?end .
+                FILTER (?end <= ?start)
+            }
+        """ ;
+    ] .
+
+# ============================================
+# VESSEL SHAPE (선박 데이터 품질)
+# ============================================
+
+kso:VesselShape a sh:NodeShape ;
+    sh:targetClass kso:Vessel ;
+    sh:name "선박 데이터 검증" ;
+    sh:description "선박 정보의 필수 항목 및 형식 검증" ;
+    
+    # 선박코드 (필수, 형식: VS + 4자리 숫자)
+    sh:property [
+        sh:path kso:vesselCode ;
+        sh:name "선박코드" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^VS[0-9]{4}$" ;
+        sh:message "선박코드는 필수이며 'VS'로 시작하고 4자리 숫자여야 합니다 (예: VS0001)" ;
+    ] ;
+    
+    # 선박명 (필수)
+    sh:property [
+        sh:path kso:vesselName ;
+        sh:name "선박명" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 2 ;
+        sh:maxLength 100 ;
+        sh:message "선박명은 필수이며 2~100자 사이여야 합니다" ;
+    ] ;
+    
+    # 선박용량 (필수, 양수)
+    sh:property [
+        sh:path kso:vesselCapacity ;
+        sh:name "선박용량" ;
+        sh:minCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 100 ;
+        sh:maxInclusive 25000 ;
+        sh:message "선박용량은 100~25,000 TEU 사이여야 합니다" ;
+    ] .
+
+# ============================================
+# BUSINESS RULES (복합 비즈니스 규칙)
+# ============================================
+
+# VIP 고객 자동 분류 검증
+kso:VIPShipperRule a sh:NodeShape ;
+    sh:targetClass kso:Shipper ;
+    sh:name "VIP 고객 분류 규칙" ;
+    sh:sparql [
+        sh:message "월평균 500 TEU 이상인 화주는 VIP 등급이어야 합니다" ;
+        sh:prefixes kso: ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this kso:avgMonthlyVolume ?volume ;
+                      kso:customerGrade ?grade .
+                FILTER (?volume >= 500 && ?grade != kso:VIP)
+            }
+        """ ;
+    ] .
+
+# 고신뢰도 예측 검증
+kso:HighConfidencePredictionRule a sh:NodeShape ;
+    sh:targetClass kso:Prediction ;
+    sh:name "고신뢰도 예측 규칙" ;
+    sh:sparql [
+        sh:message "신뢰도 0.85 이상인 예측은 알림을 생성해야 합니다" ;
+        sh:prefixes kso: ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this kso:confidence ?conf .
+                FILTER (?conf >= 0.85)
+                FILTER NOT EXISTS { $this kso:triggersAlert ?alert }
+            }
+        """ ;
+    ] .
+
+# 이탈 위험 고객 검증
+kso:ChurnRiskShipperRule a sh:NodeShape ;
+    sh:targetClass kso:Shipper ;
+    sh:name "이탈 위험 고객 규칙" ;
+    sh:sparql [
+        sh:message "이탈위험도 0.7 이상인 화주는 리스크 객체가 연결되어야 합니다" ;
+        sh:prefixes kso: ;
+        sh:select """
+            SELECT $this
+            WHERE {
+                $this kso:churnRisk ?risk .
+                FILTER (?risk >= 0.7)
+                FILTER NOT EXISTS { $this kso:hasRisk ?riskObj }
+            }
+        """ ;
+    ] .
