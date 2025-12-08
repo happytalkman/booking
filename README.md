@@ -171,6 +171,6 @@ MIT License
 ## 👥 기여
 
 이슈 및 PR 환영합니다!
-
+010-4174-0518 이길환
+happytalkman@weai.kr
 ---
-010-4174-0518 이길환 happytalkman@weai.kr
