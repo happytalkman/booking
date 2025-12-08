@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import * as d3 from 'd3';
 import { GraphNode, GraphLink, Language, EntityType } from '../types';
 import { Network, RefreshCw, Layers, Filter, CircleDot, Share2 } from 'lucide-react';
+import KnowledgeGraphPanel from '../components/KnowledgeGraphPanel';
 
 interface KnowledgeGraphProps {
   lang: Language;
@@ -397,7 +398,27 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
           .attr("stroke", "#cbd5e1")
           .attr("stroke-opacity", 0.6)
           .attr("stroke-width", 2)
-          .attr("marker-end", "url(#arrowhead-radial)");
+          .attr("marker-end", "url(#arrowhead-radial)")
+          .attr("x1", (d:any) => {
+              const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
+              const sourceNode = radialNodes.find(n => n.id === sourceId);
+              return (sourceNode as any)?.x || 0;
+          })
+          .attr("y1", (d:any) => {
+              const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
+              const sourceNode = radialNodes.find(n => n.id === sourceId);
+              return (sourceNode as any)?.y || 0;
+          })
+          .attr("x2", (d:any) => {
+              const targetId = typeof d.target === 'object' ? d.target.id : d.target;
+              const targetNode = radialNodes.find(n => n.id === targetId);
+              return (targetNode as any)?.x || 0;
+          })
+          .attr("y2", (d:any) => {
+              const targetId = typeof d.target === 'object' ? d.target.id : d.target;
+              const targetNode = radialNodes.find(n => n.id === targetId);
+              return (targetNode as any)?.y || 0;
+          });
 
         // Update link positions
         const updateLinks = () => {
@@ -424,9 +445,6 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
             });
         };
 
-        // 초기 링크 위치 설정
-        updateLinks();
-
         // Link Labels for Radial (관계 표시)
         const linkLabelRadial = linkGroup
           .selectAll("text")
@@ -438,7 +456,21 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
           .attr("text-anchor", "middle")
           .attr("dy", -3)
           .style("pointer-events", "none")
-          .style("opacity", 0.8);
+          .style("opacity", 0.8)
+          .attr("x", (d:any) => {
+              const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
+              const targetId = typeof d.target === 'object' ? d.target.id : d.target;
+              const sourceNode = radialNodes.find(n => n.id === sourceId);
+              const targetNode = radialNodes.find(n => n.id === targetId);
+              return ((sourceNode as any)?.x + (targetNode as any)?.x) / 2 || 0;
+          })
+          .attr("y", (d:any) => {
+              const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
+              const targetId = typeof d.target === 'object' ? d.target.id : d.target;
+              const sourceNode = radialNodes.find(n => n.id === sourceId);
+              const targetNode = radialNodes.find(n => n.id === targetId);
+              return ((sourceNode as any)?.y + (targetNode as any)?.y) / 2 || 0;
+          });
 
         // Update link labels
         const updateLinkLabels = () => {
@@ -476,6 +508,13 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
             // 노드 위치 업데이트
             d.x = event.x;
             d.y = event.y;
+            
+            // radialNodes 배열에서도 위치 업데이트
+            const nodeInArray = radialNodes.find(n => n.id === d.id);
+            if (nodeInArray) {
+              nodeInArray.x = event.x;
+              nodeInArray.y = event.y;
+            }
             
             // 노드 원 위치 업데이트
             d3.select(event.sourceEvent.target)
@@ -703,6 +742,17 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ lang }) => {
            )}
          </div>
       </div>
+
+      {/* Knowledge Graph Panel - 하단 슬라이드업 */}
+      <KnowledgeGraphPanel 
+        lang={lang} 
+        selectedNode={selectedNode}
+        onSearch={(query) => {
+          // 검색 로직: 노드 필터링
+          console.log('Search query:', query);
+          // 실제로는 그래프 필터링 구현
+        }}
+      />
     </div>
   );
 };

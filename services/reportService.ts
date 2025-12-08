@@ -367,7 +367,7 @@ export class ReportService {
     `).join('')}
 
     <div class="footer">
-      <p>KMTC 부킹 최적화 플랫폼</p>
+      <p>KMTC 온톨로지 기반 부킹 에이전틱AI 플랫폼</p>
       <p>리포트 생성 시간: ${new Date().toLocaleString('ko-KR')}</p>
     </div>
   </div>

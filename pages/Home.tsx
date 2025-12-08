@@ -1,35 +1,35 @@
-import React from 'react';
-import { Network, TrendingUp, AlertTriangle, LayoutDashboard, Share2, Search, ArrowRight, Database, Ship } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  Sparkles, Brain, Network, TrendingUp, Shield, Zap, 
+  Database, MessageSquare, Video, FileText, BarChart3, 
+  Globe, Users, Ship, Target, ArrowRight, CheckCircle2,
+  Layers, GitBranch, Activity, Eye, Mic, Download
+} from 'lucide-react';
 import { Language } from '../types';
 
 interface HomeProps {
   lang: Language;
 }
 
-const Home: React.FC<HomeProps> = ({ lang }) => {
-  const t = {
-    title: { ko: '부킹최적화 솔루션 플랫폼', en: 'Booking Optimization Platform' },
-    subtitle: { ko: 'Palantir 온톨로지 기반 영업/운항 의사결정 지원 시스템', en: 'Palantir Ontology-based Decision Support System for Sales & Ops' },
-    
-    section1Title: { ko: '플랫폼 개요', en: 'Platform Overview' },
-    introText: { ko: '솔루션 소개 및 도입 목적', en: 'Introduction & Objectives' },
-    
-    objectiveTitle: { ko: '도입 목적', en: 'Objective' },
-    objectiveDesc: { ko: '데이터 기반의 정교한 부킹 수요 예측, 영업 활동의 최적화, 그리고 선복 운영 효율화를 통한 수익성 극대화를 목표로 합니다.', en: 'Maximize profitability through data-driven booking forecasting, sales optimization, and efficient fleet operation.' },
-    
-    techTitle: { ko: '핵심 기술', en: 'Core Technology' },
-    techDesc: { ko: 'Palantir 온톨로지와 지식 그래프 기술을 활용하여 고객, 부킹, 항로, 선박, 시황 간의 복잡한 연결 관계를 통합 분석합니다.', en: 'Integrated analysis of complex relationships between customers, bookings, routes, vessels, and market conditions using Palantir Ontology and Knowledge Graph.' },
-    
-    valueTitle: { ko: '기대 가치', en: 'Expected Value' },
-    valueDesc: { ko: '매출 증대 및 수익성 개선, 취소/노쇼 리스크의 선제적 감축, 선복 활용률(Load Factor) 향상, 영업 조직의 생산성 증대 효과를 제공합니다.', en: 'Increase revenue, proactively reduce cancellation/no-show risks, improve Load Factor, and boost sales productivity.' },
+interface FeatureCard {
+  id: string;
+  icon: React.ReactNode;
+  title: { ko: string; en: string };
+  description: { ko: string; en: string };
+  features: Array<{ ko: string; en: string }>;
+  color: string;
+  gradient: string;
+}
 
-    featuresTitle: { ko: '주요 기능 요약', en: 'Key Features Summary' },
-    
-    f1Title: { ko: '지식 그래프 기능', en: 'Knowledge Graph' },
-    f1Desc: { ko: '데이터 간의 복잡한 연결 관계를 시각화하여 직관적인 인사이트를 제공합니다.', en: 'Visualizes complex data relationships for intuitive insights.' },
-    f1List: [
-        { ko: '전체 구조 탭: 온톨로지 전체 조망', en: 'Full Structure: Ontology Overview' },
-        { ko: '화주 중심 뷰: 방사형 관계 분석', en: 'Shipper View: Radial Analysis' },
+const Home: React.FC<HomeProps> = ({ lang }) => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const t = {
+    title: { ko: '플랫폼 개요', en: 'Platform Overview' },
+    subtitle: { ko: '온톨로지 기반 부킹 에이전틱AI 플랫폼의 모든 기능', en: 'All Features of Ontology-based Booking Agentic AI Platform' },
+    allCategories: { ko: '전체', en: 'All' },
+    viewDetails: { ko: '자세히 보기', en: 'View Details' },
+    implemented: {중심 뷰: 방사형 관계 분석', en: 'Shipper View: Radial Analysis' },
         { ko: '관계 통계 탭: 노드 및 엣지 정량 분석', en: 'Statistics: Quantitative Analysis' }
     ],
 
@@ -46,7 +46,7 @@ const Home: React.FC<HomeProps> = ({ lang }) => {
     f3List: [
         { ko: '총 부킹/취소/노쇼 메트릭 모니터링', en: 'Booking/Cancel/No-Show Metrics' },
         { ko: '월별/요일별 취소 추이 및 사유 분석', en: 'Cancellation Trends & Reasons' },
-        { ko: '오버부킹 최적화 권고 알고리즘', en: 'Overbooking Optimization' }
+        { ko: '에이전틱AI 오버부킹 최적화 알고리즘', en: 'Agentic AI Overbooking Optimization' }
     ],
 
     f4Title: { ko: '대시보드 12종', en: '12 Dashboards' },

@@ -47,7 +47,31 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
     try {
       // authService 사용
-      const { sendOTP } = await import('../services/authService');
+      const { sendOTP, isAutoLoginEmail, autoLogin } = await import('../services/authService');
+      
+      // 자동 로그인 이메일 확인
+      if (isAutoLoginEmail(email)) {
+        const result = autoLogin(email);
+        
+        // 로컬 스토리지에 인증 정보 저장
+        localStorage.setItem('auth_token', result.token);
+        localStorage.setItem('user_email', email);
+        localStorage.setItem('user_role', result.role);
+        localStorage.setItem('user_name', result.name);
+        
+        // 성공 단계로 이동
+        setStep('success');
+        
+        // 즉시 메인 화면으로 전환
+        setTimeout(() => {
+          onLoginSuccess(email, result.role);
+        }, 500);
+        
+        setLoading(false);
+        return;
+      }
+
+      // 일반 OTP 로그인
       const result = await sendOTP(email);
 
       if (result.success) {
@@ -160,7 +184,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             <Shield className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            KMTC 부킹 최적화
+            KMTC 온톨로지 기반 부킹 에이전틱AI
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             {step === 'email' && '이메일로 간편하게 로그인하세요'}

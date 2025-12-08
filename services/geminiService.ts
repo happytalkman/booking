@@ -71,7 +71,7 @@ export const sendMessageToAI = async (message: string, context: string): Promise
   if (ai) {
     console.log('Using Gemini API for chat');
     try {
-      const prompt = `당신은 KMTC(고려해운)의 부킹 최적화 플랫폼 AI 어시스턴트입니다.
+      const prompt = `당신은 KMTC(고려해운)의 온톨로지 기반 부킹 에이전틱AI 플랫폼 AI 어시스턴트입니다.
       
 [현재 화면 맥락]: ${context}
 

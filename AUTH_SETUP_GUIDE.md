@@ -2,7 +2,7 @@
 
 ## 📋 개요
 
-KMTC 부킹 최적화 플랫폼에 OTP(One-Time Password) 이메일 인증 시스템이 추가되었습니다.
+KMTC 온톨로지 기반 부킹 에이전틱AI 플랫폼에 OTP(One-Time Password) 이메일 인증 시스템이 추가되었습니다.
 
 ### 주요 기능
 - ✉️ 이메일 기반 OTP 인증 (6자리 숫자)

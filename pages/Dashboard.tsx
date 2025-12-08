@@ -9,6 +9,7 @@ import MLPredictionPanel from '../components/MLPredictionPanel';
 import { DataQualityPanel } from '../components/DataQualityPanel';
 import { KPIDetailModal } from '../components/KPIDetailModal';
 import { AIInsightCard } from '../components/AIInsightCard';
+import LiveVideoMonitor from '../components/LiveVideoMonitor';
 import { KPI, Language } from '../types';
 
 interface DashboardProps {
@@ -156,6 +157,9 @@ const Dashboard: React.FC<DashboardProps> = ({ lang }) => {
 
       {/* AI Insight Card */}
       <AIInsightCard lang={lang} />
+
+      {/* Live Video Monitor */}
+      <LiveVideoMonitor lang={lang} />
 
       {/* KPI Cards with Progress Bars */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

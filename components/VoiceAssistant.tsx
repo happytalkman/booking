@@ -97,7 +97,7 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ lang, onVoiceInput, las
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang === 'ko' ? 'ko-KR' : 'en-US';
-      utterance.rate = 1.0;
+      utterance.rate = 1.3; // 음성 속도 (0.1 ~ 10, 기본값 1.0, 1.3 = 30% 빠름)
       utterance.pitch = 1.0;
       utterance.volume = 1.0;
 

@@ -82,7 +82,7 @@ class OpenRouterService {
     const messages: OpenRouterMessage[] = [
       {
         role: 'system',
-        content: systemPrompt || `당신은 KMTC(고려해운)의 부킹 최적화 플랫폼 AI 어시스턴트입니다.
+        content: systemPrompt || `당신은 KMTC(고려해운)의 온톨로지 기반 부킹 에이전틱AI 플랫폼 AI 어시스턴트입니다.
 해운 물류 전문가로서 사용자를 돕습니다.
 현재 화면 맥락: ${context}
 

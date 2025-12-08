@@ -14,7 +14,7 @@
 # ============================================
 
 <http://kmtc.com/ontology/booking> a owl:Ontology ;
-    rdfs:label "KMTC 부킹 최적화 온톨로지"@ko ,
+    rdfs:label "KMTC 온톨로지 기반 부킹 에이전틱AI 온톨로지"@ko ,
                "KMTC Booking Optimization Ontology"@en ;
     rdfs:comment "AI 기반 부킹 예측 및 최적화를 위한 해운 도메인 온톨로지"@ko ;
     owl:versionInfo "2.0" ;

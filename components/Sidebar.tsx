@@ -22,7 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, lang, isOpen
     market: { ko: '마켓 인텔리전스', en: 'Market Intel' },
     scenarios: { ko: '실무 시나리오', en: 'Scenarios' },
     role: { ko: '플랫폼 관리자', en: 'Platform Admin' },
-    subtitle: { ko: '부킹 최적화 솔루션', en: 'Booking Optimization' },
+    subtitle: { ko: '온톨로지 기반 부킹 에이전틱AI 플랫폼', en: 'Ontology-based Booking Agentic AI Platform' },
     toggle: { ko: '메뉴 접기/펼치기', en: 'Toggle Sidebar' }
   };
 

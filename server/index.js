@@ -98,7 +98,7 @@ app.post('/api/auth/send-otp', async (req, res) => {
 
     // 이메일 전송
     const mailOptions = {
-      from: `"KMTC 부킹 최적화" <${process.env.EMAIL_USER}>`,
+      from: `"KMTC 온톨로지 기반 부킹 에이전틱AI" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'KMTC 로그인 인증번호',
       html: `
@@ -120,7 +120,7 @@ app.post('/api/auth/send-otp', async (req, res) => {
           <div class="container">
             <div class="header">
               <h1>🔐 로그인 인증번호</h1>
-              <p>KMTC 부킹 최적화 플랫폼</p>
+              <p>KMTC 온톨로지 기반 부킹 에이전틱AI 플랫폼</p>
             </div>
             <div class="content">
               <p>안녕하세요,</p>
@@ -141,7 +141,7 @@ app.post('/api/auth/send-otp', async (req, res) => {
                 </ul>
               </div>
 
-              <p>감사합니다.<br><strong>KMTC 부킹 최적화 팀</strong></p>
+              <p>감사합니다.<br><strong>KMTC 온톨로지 기반 부킹 에이전틱AI 팀</strong></p>
             </div>
             <div class="footer">
               <p>이 이메일은 자동으로 발송되었습니다. 회신하지 마세요.</p>
