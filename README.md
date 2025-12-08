@@ -1,7 +1,3 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
-
 # KMTC 부킹 최적화 플랫폼
 
 AI 기반 해운 물류 부킹 예측 및 최적화 시스템
@@ -177,5 +173,4 @@ MIT License
 이슈 및 PR 환영합니다!
 
 ---
-
-View your app in AI Studio: https://ai.studio/apps/drive/1ZZ38Dhv7kcIp1CqTgDfVnJJA4FtU2tkN
+010-4174-0518 이길환 happytalkman@weai.kr
