@@ -3,7 +3,8 @@ import {
   Network, TrendingUp, Shield, Database, MessageSquare, Video, 
   BarChart3, Users, Ship, ArrowRight, Sparkles, Brain, Eye, 
   Mic, Download, Share2, LayoutDashboard, Search, AlertTriangle,
-  Zap, FileText, Globe, Target, CheckCircle2, Layers, Activity
+  Zap, FileText, Globe, Target, CheckCircle2, Layers, Activity,
+  PieChart, LineChart, Smile, Volume2, FileBarChart
 } from 'lucide-react';
 import { Language } from '../types';
 
@@ -19,19 +20,25 @@ interface FeatureCard {
   features: string[];
   color: string;
   category: string;
+  isNew?: boolean;
 }
 
 const Home: React.FC<HomeProps> = ({ lang }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const t = {
-    title: { ko: '플랫폼 개요', en: 'Platform Overview' },
-    subtitle: { ko: '온톨로지 기반 부킹 에이전틱AI 플랫폼의 모든 기능', en: 'All Features of Ontology-based Booking Agentic AI Platform' },
+    title: { ko: '🚀 KMTC 온톨로지 기반 부킹 에이전틱AI 플랫폼', en: '🚀 KMTC Ontology-based Booking Agentic AI Platform' },
+    subtitle: { ko: '차세대 해운 물류 디지털 전환 플랫폼', en: 'Next-Generation Shipping Logistics Digital Transformation Platform' },
     allCategories: { ko: '전체', en: 'All' },
     categoryAI: { ko: 'AI 기능', en: 'AI Features' },
     categoryData: { ko: '데이터 분석', en: 'Data Analytics' },
     categoryViz: { ko: '시각화', en: 'Visualization' },
-    categoryOther: { ko: '기타', en: 'Others' }
+    categoryOther: { ko: '기타', en: 'Others' },
+    totalFeatures: { ko: '총 기능', en: 'Total Features' },
+    newFeatures: { ko: '신규 기능', en: 'New Features' },
+    architecture: { ko: '아키텍처', en: 'Architecture' },
+    ontology: { ko: '온톨로지', en: 'Ontology' },
+    viewDetails: { ko: '자세히 보기', en: 'View Details' }
   };
 
   const categories = [
@@ -43,31 +50,34 @@ const Home: React.FC<HomeProps> = ({ lang }) => {
   ];
 
   const features: FeatureCard[] = [
+    // AI 기능 (7개)
     {
-      id: 'ontology',
-      icon: <Network className="w-8 h-8" />,
-      title: { ko: '온톨로지 지식 그래프', en: 'Ontology Knowledge Graph' },
-      description: { ko: 'OWL2 기반 해운 도메인 지식 모델링 및 시각화', en: 'OWL2-based shipping domain knowledge modeling' },
-      features: ['7개 핵심 엔티티', '8개 주요 관계', 'Force/Radial 뷰', '드래그 가능한 노드', '실시간 링크 추적'],
-      color: 'blue',
-      category: 'viz'
+      id: 'voice-qna',
+      icon: <Mic className="w-8 h-8" />,
+      title: { ko: '음성 질의응답 & 감정 인식', en: 'Voice Q&A & Emotion Recognition' },
+      description: { ko: '음성으로 질문하고 감정을 인식하여 보고서 생성', en: 'Voice Q&A with emotion recognition and report generation' },
+      features: ['음성 인식 (2초 침묵 감지)', '감정 분석 (긍정/중립/부정)', '남자/여자 음성 선택', '대화 기록', 'PDF 보고서 생성'],
+      color: 'green',
+      category: 'ai',
+      isNew: true
+    },
+    {
+      id: 'market-report',
+      icon: <FileBarChart className="w-8 h-8" />,
+      title: { ko: '증권사 수준 시장 분석 보고서', en: 'Professional Market Analysis Report' },
+      description: { ko: '애널리스트 수준의 전문 시장 분석 및 PDF 출력', en: 'Analyst-level market analysis with PDF export' },
+      features: ['7개 섹션 보고서', '경쟁 분석', '리스크 평가', '전략적 제언', 'PDF 다운로드'],
+      color: 'indigo',
+      category: 'ai',
+      isNew: true
     },
     {
       id: 'ai-chat',
       icon: <MessageSquare className="w-8 h-8" />,
       title: { ko: 'AI 챗봇 (멀티 LLM)', en: 'AI Chatbot (Multi-LLM)' },
-      description: { ko: 'GPT-4, Claude, Gemini 등 여러 AI 모델 통합', en: 'Integrated GPT-4, Claude, Gemini models' },
-      features: ['자동 폴백 시스템', '컨텍스트 인식', '마크다운 렌더링', '추천 질문', '대화 히스토리'],
+      description: { ko: 'GPT-4, Claude, Gemini 자동 폴백 시스템', en: 'GPT-4, Claude, Gemini with auto-fallback' },
+      features: ['멀티 LLM 통합', '자동 폴백', '컨텍스트 인식', '마크다운 렌더링', '추천 질문'],
       color: 'purple',
-      category: 'ai'
-    },
-    {
-      id: 'voice',
-      icon: <Mic className="w-8 h-8" />,
-      title: { ko: '음성 AI 어시스턴트', en: 'Voice AI Assistant' },
-      description: { ko: 'Web Speech API 기반 음성 입력/출력', en: 'Voice input/output with Web Speech API' },
-      features: ['음성 인식', '음성 합성 (1.3배 속도)', '핸즈프리 작업', '다국어 지원'],
-      color: 'green',
       category: 'ai'
     },
     {
@@ -75,18 +85,9 @@ const Home: React.FC<HomeProps> = ({ lang }) => {
       icon: <Brain className="w-8 h-8" />,
       title: { ko: 'ML 운임 예측', en: 'ML Freight Prediction' },
       description: { ko: 'TensorFlow.js 기반 30일 운임 예측', en: '30-day freight prediction with TensorFlow.js' },
-      features: ['30일 예측', '영향 요인 분석', '신뢰도 구간', '과거 데이터 비교'],
-      color: 'indigo',
+      features: ['30일 예측', '영향 요인 분석', '신뢰도 구간', '정확도 92.3%', '과거 데이터 비교'],
+      color: 'blue',
       category: 'ai'
-    },
-    {
-      id: 'video',
-      icon: <Video className="w-8 h-8" />,
-      title: { ko: '실시간 영상 모니터링', en: 'Live Video Monitoring' },
-      description: { ko: '4개 카메라 라이브 피드 및 컨트롤', en: '4-camera live feed with controls' },
-      features: ['4개 카메라 전환', '전체화면 모드', '스냅샷 캡처', '재생/일시정지', '실시간 상태'],
-      color: 'red',
-      category: 'other'
     },
     {
       id: 'kg-panel',
@@ -98,93 +99,135 @@ const Home: React.FC<HomeProps> = ({ lang }) => {
       category: 'ai'
     },
     {
-      id: 'dashboard',
-      icon: <LayoutDashboard className="w-8 h-8" />,
-      title: { ko: 'KPI 대시보드', en: 'KPI Dashboard' },
-      description: { ko: '실시간 KPI 모니터링 및 드릴다운', en: 'Real-time KPI monitoring with drill-down' },
-      features: ['프로그레스 바', '드릴다운 모달', 'AI 인사이트 카드', '목표 대비 분석', '이상치 탐지'],
-      color: 'orange',
-      category: 'viz'
-    },
-    {
       id: 'booking-rec',
       icon: <Target className="w-8 h-8" />,
       title: { ko: 'AI 부킹 추천', en: 'AI Booking Recommendation' },
-      description: { ko: '3가지 액션 제공 (지금/대기/모니터링)', en: '3 action types (Now/Wait/Monitor)' },
+      description: { ko: '3가지 액션 (지금 부킹/대기/모니터링)', en: '3 actions: Book Now/Wait/Monitor' },
       features: ['지금 부킹', '대기 권장', '모니터링', '근거 제시', '신뢰도 점수'],
-      color: 'emerald',
+      color: 'orange',
       category: 'ai'
     },
     {
-      id: 'alerts',
-      icon: <AlertTriangle className="w-8 h-8" />,
-      title: { ko: '실시간 알림', en: 'Real-time Alerts' },
-      description: { ko: '4가지 알림 타입 및 조치 기능', en: '4 alert types with action features' },
-      features: ['운임 하락 알림', '경쟁사 변경', '리스크 경고', '기회 포착', '조치하기 버튼'],
-      color: 'amber',
-      category: 'other'
+      id: 'ai-insight',
+      icon: <Sparkles className="w-8 h-8" />,
+      title: { ko: 'AI 인사이트 카드', en: 'AI Insight Cards' },
+      description: { ko: '4가지 타입 인사이트 자동 생성', en: 'Auto-generated insights (4 types)' },
+      features: ['성공 인사이트', '경고', '정보', '기회', '실시간 업데이트'],
+      color: 'yellow',
+      category: 'ai'
     },
+
+    // 데이터 분석 (6개)
     {
       id: 'simulator',
       icon: <Activity className="w-8 h-8" />,
       title: { ko: '시나리오 시뮬레이터', en: 'Scenario Simulator' },
-      description: { ko: '4개 변수 동시 조정 예측 시뮬레이터', en: '4-variable prediction simulator' },
-      features: ['유가 변동', '홍해 리스크', '수요 변화', '환율 조정', '실시간 예측'],
-      color: 'violet',
+      description: { ko: '4개 변수 동시 조정 및 실시간 예측', en: '4-variable adjustment with real-time prediction' },
+      features: ['유가/홍해/수요/환율', '실시간 예측', '시나리오 저장', '민감도 분석', '리스크 시뮬레이션'],
+      color: 'teal',
       category: 'data'
     },
     {
       id: 'competitor',
       icon: <Users className="w-8 h-8" />,
-      title: { ko: '경쟁사 벤치마킹', en: 'Competitor Benchmark' },
-      description: { ko: '5개 선사 실시간 비교 분석', en: '5-carrier real-time comparison' },
-      features: ['운임 비교', '시장점유율', '정시도착률', '서비스 품질', '트렌드 분석'],
+      title: { ko: '경쟁사 벤치마킹', en: 'Competitor Benchmarking' },
+      description: { ko: '5개 선사 비교 분석', en: 'Compare 5 major carriers' },
+      features: ['MSC/Maersk/COSCO/Evergreen/HMM', '운임 비교', '시장점유율', '정시도착률', '트렌드 분석'],
       color: 'pink',
       category: 'data'
     },
     {
       id: 'historical',
-      icon: <TrendingUp className="w-8 h-8" />,
+      icon: <LineChart className="w-8 h-8" />,
       title: { ko: '과거 데이터 비교', en: 'Historical Comparison' },
-      description: { ko: '6개월/1년 운임 추세 분석', en: '6-month/1-year freight trend analysis' },
-      features: ['인터랙티브 차트', '기간 선택', '항로별 비교', '계절성 분석'],
-      color: 'teal',
+      description: { ko: '6개월/1년 운임 추세 분석', en: '6M/1Y freight trend analysis' },
+      features: ['6개월/1년 추세', '계절성 패턴', '항로별 비교', '이상치 탐지', '인터랙티브 차트'],
+      color: 'violet',
       category: 'data'
     },
     {
-      id: 'shacl',
+      id: 'data-quality',
       icon: <Shield className="w-8 h-8" />,
       title: { ko: 'SHACL 데이터 검증', en: 'SHACL Data Validation' },
       description: { ko: 'W3C 표준 기반 데이터 품질 보장', en: 'W3C standard-based data quality' },
-      features: ['46개 제약조건', '7개 비즈니스 규칙', '실시간 검증', '오류 리포트'],
-      color: 'slate',
+      features: ['46개 제약조건', '7개 비즈니스 규칙', '실시간 검증', '오류 리포트', '99.5% 품질'],
+      color: 'emerald',
       category: 'data'
     },
     {
-      id: 'report',
+      id: 'alerts',
+      icon: <AlertTriangle className="w-8 h-8" />,
+      title: { ko: '실시간 알림', en: 'Real-time Alerts' },
+      description: { ko: '4가지 알림 타입 (운임/경쟁사/리스크/기회)', en: '4 alert types: Rate/Competitor/Risk/Opportunity' },
+      features: ['운임 하락', '경쟁사 변경', '리스크 경고', '기회 알림', '조치하기 버튼'],
+      color: 'red',
+      category: 'data'
+    },
+    {
+      id: 'kpi',
+      icon: <BarChart3 className="w-8 h-8" />,
+      title: { ko: 'KPI 대시보드', en: 'KPI Dashboard' },
+      description: { ko: '프로그레스 바 및 드릴다운 모달', en: 'Progress bars with drill-down modals' },
+      features: ['8개 핵심 KPI', '프로그레스 바', '드릴다운 모달', '색상 코딩', '이상치 탐지'],
+      color: 'sky',
+      category: 'data'
+    },
+
+    // 시각화 (3개)
+    {
+      id: 'ontology',
+      icon: <Network className="w-8 h-8" />,
+      title: { ko: '온톨로지 지식 그래프', en: 'Ontology Knowledge Graph' },
+      description: { ko: 'OWL2 기반 해운 도메인 지식 모델링', en: 'OWL2-based shipping domain knowledge' },
+      features: ['7개 핵심 엔티티', '8개 주요 관계', 'Force/Radial 뷰', '드래그 가능', '실시간 링크'],
+      color: 'blue',
+      category: 'viz'
+    },
+    {
+      id: 'video',
+      icon: <Video className="w-8 h-8" />,
+      title: { ko: '실시간 영상 모니터링', en: 'Live Video Monitoring' },
+      description: { ko: '4개 카메라 라이브 피드', en: '4-camera live feed' },
+      features: ['부산항 터미널', '컨테이너 야드', '적재 부두', '게이트', '전체화면 모드'],
+      color: 'red',
+      category: 'viz'
+    },
+    {
+      id: 'charts',
+      icon: <PieChart className="w-8 h-8" />,
+      title: { ko: '인터랙티브 차트', en: 'Interactive Charts' },
+      description: { ko: 'Recharts 기반 데이터 시각화', en: 'Recharts-based data visualization' },
+      features: ['라인 차트', '바 차트', '파이 차트', '에어리어 차트', '툴팁/줌'],
+      color: 'indigo',
+      category: 'viz'
+    },
+
+    // 기타 (3개)
+    {
+      id: 'reports',
       icon: <Download className="w-8 h-8" />,
       title: { ko: '리포트 다운로드', en: 'Report Download' },
-      description: { ko: '4가지 포맷 지원 (PDF/MD/JSON/CSV)', en: '4 formats (PDF/MD/JSON/CSV)' },
-      features: ['PDF 리포트', 'Markdown', 'JSON 데이터', 'CSV 내보내기', '자동 생성'],
+      description: { ko: '4가지 포맷 (PDF/MD/JSON/CSV)', en: '4 formats: PDF/MD/JSON/CSV' },
+      features: ['PDF 보고서', 'Markdown', 'JSON 데이터', 'CSV 내보내기', '자동 차트 포함'],
       color: 'gray',
       category: 'other'
     },
     {
-      id: 'multilang',
+      id: 'i18n',
       icon: <Globe className="w-8 h-8" />,
-      title: { ko: '다국어 지원', en: 'Multi-language' },
-      description: { ko: '한글/영문 완벽 지원 및 동적 전환', en: 'Korean/English with dynamic switching' },
-      features: ['한글/영문', '동적 전환', 'AI 응답 번역', 'UI 완전 번역'],
-      color: 'sky',
+      title: { ko: '다국어 지원', en: 'Internationalization' },
+      description: { ko: '한글/영문 완벽 지원', en: 'Full Korean/English support' },
+      features: ['한글/영문 전환', 'AI 응답 번역', 'UI 완전 번역', '동적 언어 전환', '로컬 스토리지'],
+      color: 'blue',
       category: 'other'
     },
     {
-      id: 'darkmode',
-      icon: <Sparkles className="w-8 h-8" />,
+      id: 'ux',
+      icon: <Layers className="w-8 h-8" />,
       title: { ko: '다크모드 & UX', en: 'Dark Mode & UX' },
-      description: { ko: '키보드 단축키, 북마크, 다크모드', en: 'Keyboard shortcuts, bookmarks, dark mode' },
-      features: ['다크모드', '키보드 단축키', '북마크', '스크롤 투 탑', '반응형 디자인'],
-      color: 'fuchsia',
+      description: { ko: '15개 키보드 단축키 및 북마크', en: '15 keyboard shortcuts & bookmarks' },
+      features: ['다크/라이트 모드', '15개 단축키', '북마크 시스템', '반응형 디자인', '스크롤 투 탑'],
+      color: 'slate',
       category: 'other'
     }
   ];
@@ -193,157 +236,408 @@ const Home: React.FC<HomeProps> = ({ lang }) => {
     ? features 
     : features.filter(f => f.category === selectedCategory);
 
-  const getColorClasses = (color: string) => {
-    const colors: Record<string, { bg: string; border: string; text: string; icon: string }> = {
-      blue: { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-800', text: 'text-blue-900 dark:text-blue-100', icon: 'text-blue-600 dark:text-blue-400' },
-      purple: { bg: 'bg-purple-50 dark:bg-purple-900/20', border: 'border-purple-200 dark:border-purple-800', text: 'text-purple-900 dark:text-purple-100', icon: 'text-purple-600 dark:text-purple-400' },
-      green: { bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200 dark:border-green-800', text: 'text-green-900 dark:text-green-100', icon: 'text-green-600 dark:text-green-400' },
-      indigo: { bg: 'bg-indigo-50 dark:bg-indigo-900/20', border: 'border-indigo-200 dark:border-indigo-800', text: 'text-indigo-900 dark:text-indigo-100', icon: 'text-indigo-600 dark:text-indigo-400' },
-      red: { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-200 dark:border-red-800', text: 'text-red-900 dark:text-red-100', icon: 'text-red-600 dark:text-red-400' },
-      cyan: { bg: 'bg-cyan-50 dark:bg-cyan-900/20', border: 'border-cyan-200 dark:border-cyan-800', text: 'text-cyan-900 dark:text-cyan-100', icon: 'text-cyan-600 dark:text-cyan-400' },
-      orange: { bg: 'bg-orange-50 dark:bg-orange-900/20', border: 'border-orange-200 dark:border-orange-800', text: 'text-orange-900 dark:text-orange-100', icon: 'text-orange-600 dark:text-orange-400' },
-      emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800', text: 'text-emerald-900 dark:text-emerald-100', icon: 'text-emerald-600 dark:text-emerald-400' },
-      amber: { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-200 dark:border-amber-800', text: 'text-amber-900 dark:text-amber-100', icon: 'text-amber-600 dark:text-amber-400' },
-      violet: { bg: 'bg-violet-50 dark:bg-violet-900/20', border: 'border-violet-200 dark:border-violet-800', text: 'text-violet-900 dark:text-violet-100', icon: 'text-violet-600 dark:text-violet-400' },
-      pink: { bg: 'bg-pink-50 dark:bg-pink-900/20', border: 'border-pink-200 dark:border-pink-800', text: 'text-pink-900 dark:text-pink-100', icon: 'text-pink-600 dark:text-pink-400' },
-      teal: { bg: 'bg-teal-50 dark:bg-teal-900/20', border: 'border-teal-200 dark:border-teal-800', text: 'text-teal-900 dark:text-teal-100', icon: 'text-teal-600 dark:text-teal-400' },
-      slate: { bg: 'bg-slate-50 dark:bg-slate-900/20', border: 'border-slate-200 dark:border-slate-800', text: 'text-slate-900 dark:text-slate-100', icon: 'text-slate-600 dark:text-slate-400' },
-      gray: { bg: 'bg-gray-50 dark:bg-gray-900/20', border: 'border-gray-200 dark:border-gray-800', text: 'text-gray-900 dark:text-gray-100', icon: 'text-gray-600 dark:text-gray-400' },
-      sky: { bg: 'bg-sky-50 dark:bg-sky-900/20', border: 'border-sky-200 dark:border-sky-800', text: 'text-sky-900 dark:text-sky-100', icon: 'text-sky-600 dark:text-sky-400' },
-      fuchsia: { bg: 'bg-fuchsia-50 dark:bg-fuchsia-900/20', border: 'border-fuchsia-200 dark:border-fuchsia-800', text: 'text-fuchsia-900 dark:text-fuchsia-100', icon: 'text-fuchsia-600 dark:text-fuchsia-400' }
-    };
-    return colors[color] || colors.blue;
+  const stats = {
+    total: features.length,
+    new: features.filter(f => f.isNew).length,
+    ai: features.filter(f => f.category === 'ai').length,
+    data: features.filter(f => f.category === 'data').length
   };
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
-      
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-slate-900 to-blue-900 rounded-2xl overflow-hidden shadow-2xl">
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-overlay"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1494412574643-35d324698b93?auto=format&fit=crop&q=80')" }}
-        ></div>
-        <div className="relative p-10 md:p-16 text-white">
-          <div className="flex items-center gap-3 mb-4">
-             <Ship className="w-8 h-8 text-blue-400" />
-             <span className="text-sm font-bold tracking-widest uppercase bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30">KMTC System</span>
+      {/* 헤더 */}
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          {t.title[lang]}
+        </h1>
+        <p className="text-xl text-slate-600 dark:text-slate-400">
+          {t.subtitle[lang]}
+        </p>
+        
+        {/* 통계 */}
+        <div className="flex items-center justify-center gap-8 mt-6">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-blue-600">{stats.total}</div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">{t.totalFeatures[lang]}</div>
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
-            {t.title[lang]}
-          </h1>
-          <p className="text-lg md:text-xl text-blue-100 max-w-2xl font-light">
-            {t.subtitle[lang]}
-          </p>
-          
-          <div className="mt-10 flex flex-wrap gap-4 text-sm font-medium">
-             <div className="flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-lg border border-white/10">
-                <CheckCircle2 className="w-4 h-4 text-green-300"/> {features.length} {lang === 'ko' ? '개 기능' : 'Features'}
-             </div>
-             <div className="flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-lg border border-white/10">
-                <Brain className="w-4 h-4 text-purple-300"/> {features.filter(f => f.category === 'ai').length} AI {lang === 'ko' ? '기능' : 'Features'}
-             </div>
-             <div className="flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-lg border border-white/10">
-                <BarChart3 className="w-4 h-4 text-blue-300"/> {features.filter(f => f.category === 'data').length} {lang === 'ko' ? '분석 도구' : 'Analytics'}
-             </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-green-600">{stats.new}</div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">{t.newFeatures[lang]}</div>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-purple-600">{stats.ai}</div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">{t.categoryAI[lang]}</div>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-indigo-600">{stats.data}</div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">{t.categoryData[lang]}</div>
           </div>
         </div>
       </div>
 
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-3">
-        {categories.map((cat) => (
+      {/* 카테고리 필터 */}
+      <div className="flex items-center justify-center gap-3 flex-wrap">
+        {categories.map(cat => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
               selectedCategory === cat.id
                 ? 'bg-blue-600 text-white shadow-lg scale-105'
-                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
             }`}
           >
             {cat.icon}
             {cat.label}
-            <span className={`text-xs px-2 py-0.5 rounded-full ${
-              selectedCategory === cat.id
-                ? 'bg-white/20'
-                : 'bg-slate-100 dark:bg-slate-700'
-            }`}>
-              {cat.id === 'all' ? features.length : features.filter(f => f.category === cat.id).length}
+            <span className="text-xs opacity-75">
+              ({cat.id === 'all' ? stats.total : features.filter(f => f.category === cat.id).length})
             </span>
           </button>
         ))}
       </div>
 
-      {/* Feature Cards Grid */}
+      {/* 기능 카드 그리드 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredFeatures.map((feature) => {
-          const colors = getColorClasses(feature.color);
-          return (
-            <div
-              key={feature.id}
-              className={`${colors.bg} border ${colors.border} rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
-            >
-              <div className={`${colors.icon} mb-4`}>
-                {feature.icon}
-              </div>
-              <h3 className={`text-xl font-bold mb-2 ${colors.text}`}>
-                {feature.title[lang]}
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                {feature.description[lang]}
-              </p>
-              <ul className="space-y-2">
-                {feature.features.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm">
-                    <CheckCircle2 className={`w-4 h-4 ${colors.icon} flex-shrink-0 mt-0.5`} />
-                    <span className="text-slate-700 dark:text-slate-300">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
+        {filteredFeatures.map(feature => (
+          <FeatureCardComponent key={feature.id} feature={feature} lang={lang} />
+        ))}
       </div>
 
-      {/* Summary Stats */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-700 rounded-2xl p-8 border border-blue-200 dark:border-slate-600">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div>
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-              {features.length}
-            </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              {lang === 'ko' ? '전체 기능' : 'Total Features'}
-            </div>
+      {/* 아키텍처 섹션 */}
+      <ArchitectureSection lang={lang} />
+
+      {/* 온톨로지 섹션 */}
+      <OntologySection lang={lang} />
+    </div>
+  );
+};
+
+// 기능 카드 컴포넌트
+const FeatureCardComponent: React.FC<{ feature: FeatureCard; lang: Language }> = ({ feature, lang }) => {
+  const colorClasses = {
+    blue: 'from-blue-500 to-blue-600',
+    purple: 'from-purple-500 to-purple-600',
+    green: 'from-green-500 to-green-600',
+    indigo: 'from-indigo-500 to-indigo-600',
+    cyan: 'from-cyan-500 to-cyan-600',
+    orange: 'from-orange-500 to-orange-600',
+    yellow: 'from-yellow-500 to-yellow-600',
+    teal: 'from-teal-500 to-teal-600',
+    pink: 'from-pink-500 to-pink-600',
+    violet: 'from-violet-500 to-violet-600',
+    emerald: 'from-emerald-500 to-emerald-600',
+    red: 'from-red-500 to-red-600',
+    sky: 'from-sky-500 to-sky-600',
+    gray: 'from-gray-500 to-gray-600',
+    slate: 'from-slate-500 to-slate-600'
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all hover:scale-105 group">
+      {/* 헤더 */}
+      <div className={`bg-gradient-to-r ${colorClasses[feature.color as keyof typeof colorClasses]} p-6 text-white relative`}>
+        <div className="flex items-start justify-between">
+          <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+            {feature.icon}
           </div>
-          <div>
-            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-              {features.filter(f => f.category === 'ai').length}
-            </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              {lang === 'ko' ? 'AI 기능' : 'AI Features'}
-            </div>
+          {feature.isNew && (
+            <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-full animate-pulse">
+              NEW
+            </span>
+          )}
+        </div>
+        <h3 className="text-xl font-bold mt-4">{feature.title[lang]}</h3>
+        <p className="text-sm opacity-90 mt-2">{feature.description[lang]}</p>
+      </div>
+
+      {/* 기능 목록 */}
+      <div className="p-6">
+        <ul className="space-y-2">
+          {feature.features.map((f, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+              <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+// 아키텍처 섹션
+const ArchitectureSection: React.FC<{ lang: Language }> = ({ lang }) => {
+  const t = {
+    title: { ko: '🏗️ 시스템 아키텍처', en: '🏗️ System Architecture' },
+    subtitle: { ko: '엔터프라이즈급 기술 스택', en: 'Enterprise-grade Technology Stack' },
+    frontend: { ko: 'Frontend', en: 'Frontend' },
+    backend: { ko: 'Backend', en: 'Backend' },
+    ai: { ko: 'AI/ML', en: 'AI/ML' },
+    semantic: { ko: 'Semantic Web', en: 'Semantic Web' }
+  };
+
+  const architecture = {
+    frontend: [
+      { name: 'React 18', desc: lang === 'ko' ? '최신 React 프레임워크' : 'Latest React framework' },
+      { name: 'TypeScript', desc: lang === 'ko' ? '타입 안전성 보장' : 'Type safety' },
+      { name: 'Vite', desc: lang === 'ko' ? '빠른 빌드 시스템' : 'Fast build system' },
+      { name: 'Tailwind CSS', desc: lang === 'ko' ? '유틸리티 퍼스트 CSS' : 'Utility-first CSS' },
+      { name: 'Recharts', desc: lang === 'ko' ? '데이터 시각화' : 'Data visualization' },
+      { name: 'D3.js', desc: lang === 'ko' ? '지식 그래프 렌더링' : 'Knowledge graph rendering' }
+    ],
+    backend: [
+      { name: 'Node.js', desc: lang === 'ko' ? '서버 런타임' : 'Server runtime' },
+      { name: 'Express', desc: lang === 'ko' ? 'REST API 서버' : 'REST API server' },
+      { name: 'JWT', desc: lang === 'ko' ? '토큰 인증' : 'Token authentication' },
+      { name: 'Nodemailer', desc: lang === 'ko' ? '이메일 전송' : 'Email delivery' }
+    ],
+    ai: [
+      { name: 'OpenRouter API', desc: lang === 'ko' ? '멀티 LLM 통합' : 'Multi-LLM integration' },
+      { name: 'Google Gemini', desc: lang === 'ko' ? 'AI 폴백 시스템' : 'AI fallback system' },
+      { name: 'TensorFlow.js', desc: lang === 'ko' ? 'ML 운임 예측' : 'ML freight prediction' },
+      { name: 'Web Speech API', desc: lang === 'ko' ? '음성 인식/합성' : 'Voice recognition/synthesis' }
+    ],
+    semantic: [
+      { name: 'OWL2', desc: lang === 'ko' ? '온톨로지 모델링' : 'Ontology modeling' },
+      { name: 'SHACL', desc: lang === 'ko' ? '데이터 검증' : 'Data validation' },
+      { name: 'RDF/Turtle', desc: lang === 'ko' ? '지식 표현' : 'Knowledge representation' },
+      { name: 'SPARQL', desc: lang === 'ko' ? '시맨틱 쿼리' : 'Semantic queries' }
+    ]
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+          {t.title[lang]}
+        </h2>
+        <p className="text-slate-600 dark:text-slate-400">
+          {t.subtitle[lang]}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Frontend */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-4">
+            <Layers className="w-6 h-6 text-blue-600" />
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t.frontend[lang]}</h3>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
-              {features.filter(f => f.category === 'data').length}
-            </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              {lang === 'ko' ? '분석 도구' : 'Analytics'}
-            </div>
+          <ul className="space-y-3">
+            {architecture.frontend.map((tech, idx) => (
+              <li key={idx} className="text-sm">
+                <div className="font-medium text-slate-900 dark:text-white">{tech.name}</div>
+                <div className="text-xs text-slate-600 dark:text-slate-400">{tech.desc}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Backend */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-4">
+            <Database className="w-6 h-6 text-green-600" />
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t.backend[lang]}</h3>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-2">
-              {features.filter(f => f.category === 'viz').length}
+          <ul className="space-y-3">
+            {architecture.backend.map((tech, idx) => (
+              <li key={idx} className="text-sm">
+                <div className="font-medium text-slate-900 dark:text-white">{tech.name}</div>
+                <div className="text-xs text-slate-600 dark:text-slate-400">{tech.desc}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* AI/ML */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-4">
+            <Brain className="w-6 h-6 text-purple-600" />
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t.ai[lang]}</h3>
+          </div>
+          <ul className="space-y-3">
+            {architecture.ai.map((tech, idx) => (
+              <li key={idx} className="text-sm">
+                <div className="font-medium text-slate-900 dark:text-white">{tech.name}</div>
+                <div className="text-xs text-slate-600 dark:text-slate-400">{tech.desc}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Semantic Web */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-4">
+            <Network className="w-6 h-6 text-indigo-600" />
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t.semantic[lang]}</h3>
+          </div>
+          <ul className="space-y-3">
+            {architecture.semantic.map((tech, idx) => (
+              <li key={idx} className="text-sm">
+                <div className="font-medium text-slate-900 dark:text-white">{tech.name}</div>
+                <div className="text-xs text-slate-600 dark:text-slate-400">{tech.desc}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 온톨로지 섹션
+const OntologySection: React.FC<{ lang: Language }> = ({ lang }) => {
+  const t = {
+    title: { ko: '🧠 온톨로지 구성', en: '🧠 Ontology Structure' },
+    subtitle: { ko: 'OWL2 기반 해운 도메인 지식 모델링', en: 'OWL2-based Shipping Domain Knowledge Modeling' },
+    entities: { ko: '핵심 엔티티', en: 'Core Entities' },
+    relations: { ko: '주요 관계', en: 'Key Relations' },
+    rules: { ko: '비즈니스 규칙', en: 'Business Rules' },
+    validation: { ko: 'SHACL 검증', en: 'SHACL Validation' }
+  };
+
+  const ontology = {
+    entities: [
+      { name: 'Shipper', ko: '화주', desc: lang === 'ko' ? '화물을 의뢰하는 고객' : 'Customer requesting cargo shipment', count: 8 },
+      { name: 'Booking', ko: '부킹', desc: lang === 'ko' ? '운송 예약 정보' : 'Shipment booking information', count: 15 },
+      { name: 'Route', ko: '항로', desc: lang === 'ko' ? '출발지-목적지 경로' : 'Origin-destination path', count: 12 },
+      { name: 'Vessel', ko: '선박', desc: lang === 'ko' ? '컨테이너 운반선' : 'Container carrier vessel', count: 4 },
+      { name: 'Contract', ko: '계약', desc: lang === 'ko' ? '운송 계약 조건' : 'Shipping contract terms', count: 6 },
+      { name: 'MarketIndex', ko: '시장지표', desc: lang === 'ko' ? '운임/유가/환율 등' : 'Freight/Oil/FX rates', count: 3 },
+      { name: 'Competitor', ko: '경쟁사', desc: lang === 'ko' ? '타 선사 정보' : 'Other carrier information', count: 5 }
+    ],
+    relations: [
+      { name: 'USES', desc: lang === 'ko' ? '화주가 항로를 사용' : 'Shipper uses Route' },
+      { name: 'HAS', desc: lang === 'ko' ? '화주가 부킹을 보유' : 'Shipper has Booking' },
+      { name: 'ON', desc: lang === 'ko' ? '부킹이 항로에 속함' : 'Booking on Route' },
+      { name: 'OPERATES', desc: lang === 'ko' ? '선박이 항로를 운항' : 'Vessel operates Route' },
+      { name: 'GOVERNED_BY', desc: lang === 'ko' ? '부킹이 계약에 따름' : 'Booking governed by Contract' },
+      { name: 'AFFECTS', desc: lang === 'ko' ? '시장지표가 항로에 영향' : 'MarketIndex affects Route' },
+      { name: 'COMPETES_WITH', desc: lang === 'ko' ? '경쟁사와 경쟁' : 'Competes with Competitor' },
+      { name: 'PREDICTS', desc: lang === 'ko' ? 'ML 모델이 운임 예측' : 'ML model predicts freight' }
+    ],
+    rules: [
+      { id: 1, rule: lang === 'ko' ? '부킹은 반드시 하나의 항로에 속해야 함' : 'Booking must belong to exactly one Route' },
+      { id: 2, rule: lang === 'ko' ? '화주는 최소 하나 이상의 부킹을 가져야 함' : 'Shipper must have at least one Booking' },
+      { id: 3, rule: lang === 'ko' ? '항로는 출발지와 목적지가 달라야 함' : 'Route origin and destination must differ' },
+      { id: 4, rule: lang === 'ko' ? '운임은 0보다 커야 함' : 'Freight rate must be greater than 0' },
+      { id: 5, rule: lang === 'ko' ? '적재율은 0-100% 범위여야 함' : 'Load factor must be 0-100%' },
+      { id: 6, rule: lang === 'ko' ? '계약 종료일은 시작일 이후여야 함' : 'Contract end date must be after start date' },
+      { id: 7, rule: lang === 'ko' ? '선박 용량은 부킹 총량보다 커야 함' : 'Vessel capacity must exceed total bookings' }
+    ],
+    validation: {
+      constraints: 46,
+      businessRules: 7,
+      accuracy: '99.5%',
+      realtime: lang === 'ko' ? '실시간 검증' : 'Real-time validation'
+    }
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-slate-900 dark:to-indigo-950 rounded-2xl p-8 border border-indigo-200 dark:border-indigo-900">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+          {t.title[lang]}
+        </h2>
+        <p className="text-slate-600 dark:text-slate-400">
+          {t.subtitle[lang]}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* 핵심 엔티티 */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-4">
+            <Database className="w-6 h-6 text-indigo-600" />
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{t.entities[lang]}</h3>
+            <span className="ml-auto text-sm font-bold text-indigo-600">7개</span>
+          </div>
+          <div className="space-y-3">
+            {ontology.entities.map((entity, idx) => (
+              <div key={idx} className="flex items-start justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <div className="flex-1">
+                  <div className="font-medium text-slate-900 dark:text-white">
+                    {entity.name} <span className="text-sm text-slate-500">({entity.ko})</span>
+                  </div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400 mt-1">{entity.desc}</div>
+                </div>
+                <span className="text-xs font-bold text-indigo-600 ml-2">{entity.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 주요 관계 */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-4">
+            <Network className="w-6 h-6 text-purple-600" />
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{t.relations[lang]}</h3>
+            <span className="ml-auto text-sm font-bold text-purple-600">8개</span>
+          </div>
+          <div className="space-y-2">
+            {ontology.relations.map((rel, idx) => (
+              <div key={idx} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <ArrowRight className="w-4 h-4 text-purple-600 flex-shrink-0" />
+                <div className="flex-1">
+                  <div className="font-medium text-slate-900 dark:text-white text-sm">{rel.name}</div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400">{rel.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 비즈니스 규칙 */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-4">
+            <Shield className="w-6 h-6 text-green-600" />
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{t.rules[lang]}</h3>
+            <span className="ml-auto text-sm font-bold text-green-600">7개</span>
+          </div>
+          <div className="space-y-2">
+            {ontology.rules.map((rule) => (
+              <div key={rule.id} className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-slate-700 dark:text-slate-300">{rule.rule}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SHACL 검증 */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-4">
+            <Shield className="w-6 h-6 text-blue-600" />
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{t.validation[lang]}</h3>
+          </div>
+          <div className="space-y-4">
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div className="text-3xl font-bold text-blue-600 mb-1">{ontology.validation.constraints}</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                {lang === 'ko' ? '제약조건' : 'Constraints'}
+              </div>
             </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              {lang === 'ko' ? '시각화' : 'Visualization'}
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="text-3xl font-bold text-green-600 mb-1">{ontology.validation.businessRules}</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                {lang === 'ko' ? '비즈니스 규칙' : 'Business Rules'}
+              </div>
+            </div>
+            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <div className="text-3xl font-bold text-purple-600 mb-1">{ontology.validation.accuracy}</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                {lang === 'ko' ? '데이터 품질' : 'Data Quality'}
+              </div>
+            </div>
+            <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Activity className="w-5 h-5 text-indigo-600 animate-pulse" />
+                <div className="text-sm font-medium text-indigo-600">{ontology.validation.realtime}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 };
