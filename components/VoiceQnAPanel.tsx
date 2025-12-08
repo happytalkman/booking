@@ -284,42 +284,75 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
 
   // 음성 합성 (남자 음성)
   const speak = (text: string) => {
-    if (synthesis && text) {
-      synthesis.cancel();
-      
-      // 사용 가능한 음성 목록 가져오기
+    if (!synthesis || !text) {
+      console.log('Speech synthesis not available or no text');
+      return;
+    }
+
+    console.log('Speaking:', text);
+    synthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang === 'ko' ? 'ko-KR' : 'en-US';
+    utterance.rate = 1.2;
+    utterance.pitch = 0.9;
+    utterance.volume = 1.0;
+    
+    utterance.onstart = () => {
+      console.log('Speech started');
+      setIsSpeaking(true);
+    };
+    
+    utterance.onend = () => {
+      console.log('Speech ended');
+      setIsSpeaking(false);
+    };
+    
+    utterance.onerror = (event) => {
+      console.error('Speech error:', event);
+      setIsSpeaking(false);
+    };
+    
+    // 음성 목록 로드 후 남자 음성 선택
+    const loadVoicesAndSpeak = () => {
       const voices = synthesis.getVoices();
+      console.log('Available voices:', voices.length);
       
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang === 'ko' ? 'ko-KR' : 'en-US';
-      
-      // 남자 음성 선택 (한국어/영어)
-      const maleVoice = voices.find(voice => {
-        if (lang === 'ko') {
-          // 한국어 남자 음성 우선 순위
-          return (voice.lang.includes('ko') || voice.lang.includes('KR')) && 
-                 (voice.name.includes('Male') || voice.name.includes('남') || 
-                  voice.name.includes('Hyeryun') || !voice.name.includes('Female'));
+      if (voices.length > 0) {
+        // 남자 음성 선택
+        const maleVoice = voices.find(voice => {
+          if (lang === 'ko') {
+            return (voice.lang.includes('ko') || voice.lang.includes('KR')) && 
+                   (voice.name.includes('Male') || voice.name.includes('남') || 
+                    !voice.name.includes('Female') && !voice.name.includes('여'));
+          } else {
+            return voice.lang.includes('en') && 
+                   (voice.name.includes('Male') || voice.name.includes('David') || 
+                    voice.name.includes('James') || !voice.name.includes('Female'));
+          }
+        });
+        
+        if (maleVoice) {
+          console.log('Selected voice:', maleVoice.name);
+          utterance.voice = maleVoice;
         } else {
-          // 영어 남자 음성 우선 순위
-          return voice.lang.includes('en') && 
-                 (voice.name.includes('Male') || voice.name.includes('David') || 
-                  voice.name.includes('James') || !voice.name.includes('Female'));
+          console.log('No male voice found, using default');
         }
-      });
-      
-      if (maleVoice) {
-        utterance.voice = maleVoice;
       }
       
-      utterance.rate = 1.2; // 약간 느리게 (더 명확하게)
-      utterance.pitch = 0.9; // 낮은 음높이 (남자 음성)
-      utterance.volume = 1.0;
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      
       synthesis.speak(utterance);
+    };
+    
+    // 음성 목록이 이미 로드되었는지 확인
+    if (synthesis.getVoices().length > 0) {
+      loadVoicesAndSpeak();
+    } else {
+      // 음성 목록 로드 대기
+      synthesis.onvoiceschanged = () => {
+        loadVoicesAndSpeak();
+      };
+      // 타임아웃으로 강제 실행 (일부 브라우저에서 이벤트가 발생하지 않을 수 있음)
+      setTimeout(loadVoicesAndSpeak, 100);
     }
   };
 
