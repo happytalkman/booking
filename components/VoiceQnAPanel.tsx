@@ -398,11 +398,6 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
     setIsListening(false);
   };
 
-  const stopSpeaking = () => {
-    if (synthesis) synthesis.cancel();
-    setIsSpeaking(false);
-  };
-
   // PDF 보고서 생성
   const generateReport = () => {
     if (conversations.length === 0) {
