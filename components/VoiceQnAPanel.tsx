@@ -17,6 +17,7 @@ interface ConversationEntry {
 export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null); // 어떤 답변이 재생 중인지
   const [transcript, setTranscript] = useState('');
   const [currentEmotion, setCurrentEmotion] = useState<'positive' | 'neutral' | 'negative'>('neutral');
   const [conversations, setConversations] = useState<ConversationEntry[]>([]);
@@ -71,7 +72,7 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
 
         setTranscript(finalTranscript + interimTranscript);
 
-        // 침묵 감지: 3초간 말이 없으면 질문 완료로 간주
+        // 침묵 감지: 2초간 말이 없으면 질문 완료로 간주
         clearTimeout(silenceTimer);
         silenceTimer = setTimeout(() => {
           if (finalTranscript.trim()) {
@@ -81,7 +82,7 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
             setIsListening(false);
             recognitionInstance.stop();
           }
-        }, 3000); // 3초 대기
+        }, 2000); // 2초 대기
       };
 
       recognitionInstance.onerror = (event: any) => {
@@ -197,9 +198,7 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
     };
     
     setConversations(prev => [...prev, entry]);
-
-    // 음성으로 답변
-    speak(answer);
+    // 자동 음성 재생 제거 - 사용자가 수동으로 선택
   };
 
   // 맥락 기반 전문가 수준 AI 답변 생성
@@ -282,61 +281,81 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
       : 'Thank you for your question. To provide more accurate and helpful information, could you please specify the route name, shipper name, or particular topic you\'re interested in?\n\nFor example, you can ask "What\'s the Busan-LA freight rate?", "Current risks?", "Booking recommendation?", or "Freight forecast?"\n\nPlease feel free to ask anytime. I\'m here to help you.';
   };
 
-  // 음성 합성 (남자 음성)
-  const speak = (text: string) => {
+  // 음성 합성 (성별 선택 가능)
+  const speakAnswer = (text: string, index: number, gender: 'male' | 'female') => {
     if (!synthesis || !text) {
       console.log('Speech synthesis not available or no text');
       return;
     }
 
-    console.log('Speaking:', text);
+    console.log('Speaking:', text, 'Gender:', gender);
     synthesis.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang === 'ko' ? 'ko-KR' : 'en-US';
     utterance.rate = 1.2;
-    utterance.pitch = 0.9;
+    utterance.pitch = gender === 'male' ? 0.9 : 1.1; // 남자: 낮은 음, 여자: 높은 음
     utterance.volume = 1.0;
     
     utterance.onstart = () => {
       console.log('Speech started');
       setIsSpeaking(true);
+      setSpeakingIndex(index);
     };
     
     utterance.onend = () => {
       console.log('Speech ended');
       setIsSpeaking(false);
+      setSpeakingIndex(null);
     };
     
     utterance.onerror = (event) => {
       console.error('Speech error:', event);
       setIsSpeaking(false);
+      setSpeakingIndex(null);
     };
     
-    // 음성 목록 로드 후 남자 음성 선택
+    // 음성 목록 로드 후 성별에 맞는 음성 선택
     const loadVoicesAndSpeak = () => {
       const voices = synthesis.getVoices();
       console.log('Available voices:', voices.length);
       
       if (voices.length > 0) {
-        // 남자 음성 선택
-        const maleVoice = voices.find(voice => {
-          if (lang === 'ko') {
-            return (voice.lang.includes('ko') || voice.lang.includes('KR')) && 
-                   (voice.name.includes('Male') || voice.name.includes('남') || 
-                    !voice.name.includes('Female') && !voice.name.includes('여'));
-          } else {
-            return voice.lang.includes('en') && 
-                   (voice.name.includes('Male') || voice.name.includes('David') || 
-                    voice.name.includes('James') || !voice.name.includes('Female'));
-          }
-        });
+        let selectedVoice;
         
-        if (maleVoice) {
-          console.log('Selected voice:', maleVoice.name);
-          utterance.voice = maleVoice;
+        if (gender === 'male') {
+          // 남자 음성 선택
+          selectedVoice = voices.find(voice => {
+            if (lang === 'ko') {
+              return (voice.lang.includes('ko') || voice.lang.includes('KR')) && 
+                     (voice.name.includes('Male') || voice.name.includes('남') || 
+                      (!voice.name.includes('Female') && !voice.name.includes('여')));
+            } else {
+              return voice.lang.includes('en') && 
+                     (voice.name.includes('Male') || voice.name.includes('David') || 
+                      voice.name.includes('James') || !voice.name.includes('Female'));
+            }
+          });
         } else {
-          console.log('No male voice found, using default');
+          // 여자 음성 선택
+          selectedVoice = voices.find(voice => {
+            if (lang === 'ko') {
+              return (voice.lang.includes('ko') || voice.lang.includes('KR')) && 
+                     (voice.name.includes('Female') || voice.name.includes('여') ||
+                      voice.name.includes('Yuna') || voice.name.includes('Heami'));
+            } else {
+              return voice.lang.includes('en') && 
+                     (voice.name.includes('Female') || voice.name.includes('Samantha') || 
+                      voice.name.includes('Victoria') || voice.name.includes('Karen'));
+            }
+          });
+        }
+        
+        if (selectedVoice) {
+          console.log('Selected voice:', selectedVoice.name);
+          utterance.voice = selectedVoice;
+        } else {
+          console.log('No matching voice found, using default');
         }
       }
       
@@ -351,8 +370,17 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
       synthesis.onvoiceschanged = () => {
         loadVoicesAndSpeak();
       };
-      // 타임아웃으로 강제 실행 (일부 브라우저에서 이벤트가 발생하지 않을 수 있음)
+      // 타임아웃으로 강제 실행
       setTimeout(loadVoicesAndSpeak, 100);
+    }
+  };
+
+  // 음성 중지
+  const stopSpeaking = () => {
+    if (synthesis) {
+      synthesis.cancel();
+      setIsSpeaking(false);
+      setSpeakingIndex(null);
     }
   };
 
@@ -661,35 +689,35 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
         </div>
       </div>
 
-      {/* 음성 컨트롤 */}
+      {/* 음성 컨트롤 - 말하기와 감정 감지만 */}
       <div className="p-6 bg-slate-50 dark:bg-slate-900/50">
-        <div className="flex items-center justify-center gap-6">
+        <div className="flex items-center justify-center gap-12">
           {/* 마이크 버튼 */}
           <div className="text-center">
             <button
               onClick={isListening ? stopListening : startListening}
-              className={`w-20 h-20 rounded-full transition-all shadow-lg ${
+              className={`w-24 h-24 rounded-full transition-all shadow-lg ${
                 isListening
                   ? 'bg-red-500 hover:bg-red-600 animate-pulse scale-110'
                   : 'bg-purple-600 hover:bg-purple-700'
               }`}
             >
               {isListening ? (
-                <MicOff className="w-10 h-10 text-white mx-auto" />
+                <MicOff className="w-12 h-12 text-white mx-auto" />
               ) : (
-                <Mic className="w-10 h-10 text-white mx-auto" />
+                <Mic className="w-12 h-12 text-white mx-auto" />
               )}
             </button>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
+            <p className="text-base font-medium text-slate-700 dark:text-slate-300 mt-3">
               {isListening ? t.listening[lang] : t.speak[lang]}
             </p>
           </div>
 
           {/* 감정 표시 */}
-          <div className="flex flex-col items-center gap-2">
-            <div className={`p-4 rounded-full ${
-              currentEmotion === 'positive' ? 'bg-green-100 dark:bg-green-900/20' :
-              currentEmotion === 'negative' ? 'bg-red-100 dark:bg-red-900/20' :
+          <div className="flex flex-col items-center gap-3">
+            <div className={`p-5 rounded-full transition-all ${
+              currentEmotion === 'positive' ? 'bg-green-100 dark:bg-green-900/20 scale-110' :
+              currentEmotion === 'negative' ? 'bg-red-100 dark:bg-red-900/20 scale-110' :
               'bg-slate-100 dark:bg-slate-700'
             }`}>
               {getEmotionIcon(currentEmotion)}
@@ -697,30 +725,8 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
             <p className="text-xs text-slate-600 dark:text-slate-400">
               {t.emotionDetected[lang]}
             </p>
-            <p className="text-sm font-medium text-slate-900 dark:text-white">
+            <p className="text-base font-bold text-slate-900 dark:text-white">
               {t[currentEmotion][lang]}
-            </p>
-          </div>
-
-          {/* 스피커 버튼 (음성 중지) */}
-          <div className="text-center">
-            <button
-              onClick={stopSpeaking}
-              disabled={!isSpeaking}
-              className={`w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-lg ${
-                isSpeaking
-                  ? 'bg-green-500 hover:bg-green-600 animate-pulse cursor-pointer'
-                  : 'bg-slate-300 dark:bg-slate-600 cursor-not-allowed opacity-50'
-              }`}
-            >
-              {isSpeaking ? (
-                <Volume2 className="w-10 h-10 text-white" />
-              ) : (
-                <VolumeX className="w-10 h-10 text-white" />
-              )}
-            </button>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
-              {isSpeaking ? t.speaking[lang] : t.stop[lang]}
             </p>
           </div>
         </div>
@@ -766,18 +772,75 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-3">
+                  {/* 질문 */}
                   <div className="flex items-start gap-2">
                     <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mt-1">Q:</span>
                     <p className="flex-1 text-sm text-slate-900 dark:text-white font-medium">
                       {conv.question}
                     </p>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-xs font-bold text-green-600 dark:text-green-400 mt-1">A:</span>
-                    <p className="flex-1 text-sm text-slate-700 dark:text-slate-300">
-                      {conv.answer}
-                    </p>
+                  
+                  {/* 답변 + 음성 버튼 */}
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2">
+                      <span className="text-xs font-bold text-green-600 dark:text-green-400 mt-1">A:</span>
+                      <p className="flex-1 text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                        {conv.answer}
+                      </p>
+                    </div>
+                    
+                    {/* 음성 출력 버튼 (남자/여자) */}
+                    <div className="flex items-center gap-3 ml-5 mt-2">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
+                        {lang === 'ko' ? '음성 듣기:' : 'Listen:'}
+                      </span>
+                      
+                      {/* 남자 음성 버튼 */}
+                      <button
+                        onClick={() => speakAnswer(conv.answer, conversations.length - 1 - idx, 'male')}
+                        disabled={isSpeaking && speakingIndex !== conversations.length - 1 - idx}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          speakingIndex === conversations.length - 1 - idx && isSpeaking
+                            ? 'bg-blue-500 text-white animate-pulse scale-105'
+                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        {lang === 'ko' ? '남자' : 'Male'}
+                        {speakingIndex === conversations.length - 1 - idx && isSpeaking && (
+                          <span className="inline-block w-1 h-1 bg-white rounded-full animate-ping" />
+                        )}
+                      </button>
+                      
+                      {/* 여자 음성 버튼 */}
+                      <button
+                        onClick={() => speakAnswer(conv.answer, conversations.length - 1 - idx, 'female')}
+                        disabled={isSpeaking && speakingIndex !== conversations.length - 1 - idx}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          speakingIndex === conversations.length - 1 - idx && isSpeaking
+                            ? 'bg-pink-500 text-white animate-pulse scale-105'
+                            : 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 hover:bg-pink-200 dark:hover:bg-pink-900/50'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        {lang === 'ko' ? '여자' : 'Female'}
+                        {speakingIndex === conversations.length - 1 - idx && isSpeaking && (
+                          <span className="inline-block w-1 h-1 bg-white rounded-full animate-ping" />
+                        )}
+                      </button>
+                      
+                      {/* 중지 버튼 (재생 중일 때만) */}
+                      {speakingIndex === conversations.length - 1 - idx && isSpeaking && (
+                        <button
+                          onClick={stopSpeaking}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 transition-all"
+                        >
+                          <VolumeX className="w-3.5 h-3.5" />
+                          {lang === 'ko' ? '중지' : 'Stop'}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
