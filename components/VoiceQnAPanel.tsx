@@ -293,8 +293,8 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang === 'ko' ? 'ko-KR' : 'en-US';
-    utterance.rate = 1.2;
-    utterance.pitch = gender === 'male' ? 0.9 : 1.1; // 남자: 낮은 음, 여자: 높은 음
+    utterance.rate = 1.5; // 속도 증가 (1.2 → 1.5)
+    utterance.pitch = gender === 'male' ? 0.8 : 1.2; // 남자: 더 낮은 음, 여자: 더 높은 음
     utterance.volume = 1.0;
     
     utterance.onstart = () => {
@@ -324,31 +324,58 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
         let selectedVoice;
         
         if (gender === 'male') {
-          // 남자 음성 선택
-          selectedVoice = voices.find(voice => {
-            if (lang === 'ko') {
-              return (voice.lang.includes('ko') || voice.lang.includes('KR')) && 
-                     (voice.name.includes('Male') || voice.name.includes('남') || 
-                      (!voice.name.includes('Female') && !voice.name.includes('여')));
-            } else {
-              return voice.lang.includes('en') && 
-                     (voice.name.includes('Male') || voice.name.includes('David') || 
-                      voice.name.includes('James') || !voice.name.includes('Female'));
-            }
-          });
+          // 남자 음성 선택 (우선순위 순서)
+          if (lang === 'ko') {
+            // 한국어 남자 음성
+            selectedVoice = voices.find(v => 
+              (v.lang.includes('ko') || v.lang.includes('KR')) && 
+              (v.name.includes('Male') || v.name.toLowerCase().includes('male'))
+            ) || voices.find(v => 
+              (v.lang.includes('ko') || v.lang.includes('KR')) && 
+              v.name.includes('남')
+            ) || voices.find(v => 
+              (v.lang.includes('ko') || v.lang.includes('KR')) && 
+              !v.name.includes('Female') && !v.name.includes('여') && !v.name.includes('Yuna')
+            );
+          } else {
+            // 영어 남자 음성
+            selectedVoice = voices.find(v => 
+              v.lang.includes('en') && 
+              (v.name.includes('Male') || v.name.toLowerCase().includes('male'))
+            ) || voices.find(v => 
+              v.lang.includes('en') && 
+              (v.name.includes('David') || v.name.includes('James') || v.name.includes('Daniel'))
+            ) || voices.find(v => 
+              v.lang.includes('en') && 
+              !v.name.includes('Female') && !v.name.includes('Samantha') && !v.name.includes('Victoria')
+            );
+          }
         } else {
           // 여자 음성 선택
-          selectedVoice = voices.find(voice => {
-            if (lang === 'ko') {
-              return (voice.lang.includes('ko') || voice.lang.includes('KR')) && 
-                     (voice.name.includes('Female') || voice.name.includes('여') ||
-                      voice.name.includes('Yuna') || voice.name.includes('Heami'));
-            } else {
-              return voice.lang.includes('en') && 
-                     (voice.name.includes('Female') || voice.name.includes('Samantha') || 
-                      voice.name.includes('Victoria') || voice.name.includes('Karen'));
-            }
-          });
+          if (lang === 'ko') {
+            selectedVoice = voices.find(v => 
+              (v.lang.includes('ko') || v.lang.includes('KR')) && 
+              (v.name.includes('Female') || v.name.toLowerCase().includes('female'))
+            ) || voices.find(v => 
+              (v.lang.includes('ko') || v.lang.includes('KR')) && 
+              (v.name.includes('여') || v.name.includes('Yuna') || v.name.includes('Heami'))
+            );
+          } else {
+            selectedVoice = voices.find(v => 
+              v.lang.includes('en') && 
+              (v.name.includes('Female') || v.name.toLowerCase().includes('female'))
+            ) || voices.find(v => 
+              v.lang.includes('en') && 
+              (v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Karen'))
+            );
+          }
+        }
+        
+        // 디버깅: 사용 가능한 음성 목록 출력
+        if (!selectedVoice) {
+          console.log('Available voices for', lang, ':', 
+            voices.filter(v => v.lang.includes(lang === 'ko' ? 'ko' : 'en')).map(v => v.name)
+          );
         }
         
         if (selectedVoice) {
