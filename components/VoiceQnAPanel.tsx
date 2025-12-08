@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Volume2, VolumeX, FileText, Download, Smile, Meh, Frown, Zap, MessageCircle } from 'lucide-react';
 import { Language } from '../types';
+import { EmotionDetectionModal } from './EmotionDetectionModal';
 
 interface VoiceQnAPanelProps {
   lang: Language;
@@ -24,6 +25,7 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
   const [recognition, setRecognition] = useState<any>(null);
   const [synthesis, setSynthesis] = useState<SpeechSynthesis | null>(null);
   const [isSupported, setIsSupported] = useState(false);
+  const [showEmotionModal, setShowEmotionModal] = useState(false);
 
   const t = {
     title: { ko: '음성 질의응답', en: 'Voice Q&A' },
@@ -735,20 +737,27 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
             </p>
           </div>
 
-          {/* 감정 표시 */}
+          {/* 감정 감지 버튼 */}
           <div className="flex flex-col items-center gap-3">
-            <div className={`p-5 rounded-full transition-all ${
-              currentEmotion === 'positive' ? 'bg-green-100 dark:bg-green-900/20 scale-110' :
-              currentEmotion === 'negative' ? 'bg-red-100 dark:bg-red-900/20 scale-110' :
-              'bg-slate-100 dark:bg-slate-700'
-            }`}>
+            <button
+              onClick={() => setShowEmotionModal(true)}
+              className={`p-5 rounded-full transition-all cursor-pointer hover:scale-110 ${
+                currentEmotion === 'positive' ? 'bg-green-100 dark:bg-green-900/20 hover:bg-green-200 dark:hover:bg-green-900/30' :
+                currentEmotion === 'negative' ? 'bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30' :
+                'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
+              title={lang === 'ko' ? '고급 감정 분석 시작' : 'Start Advanced Emotion Analysis'}
+            >
               {getEmotionIcon(currentEmotion)}
-            </div>
+            </button>
             <p className="text-xs text-slate-600 dark:text-slate-400">
               {t.emotionDetected[lang]}
             </p>
             <p className="text-base font-bold text-slate-900 dark:text-white">
               {t[currentEmotion][lang]}
+            </p>
+            <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+              {lang === 'ko' ? '클릭하여 상세 분석' : 'Click for detailed analysis'}
             </p>
           </div>
         </div>
@@ -888,6 +897,17 @@ export const VoiceQnAPanel: React.FC<VoiceQnAPanelProps> = ({ lang }) => {
           </div>
         </div>
       )}
+
+      {/* 고급 감정 분석 모달 */}
+      <EmotionDetectionModal
+        isOpen={showEmotionModal}
+        onClose={() => setShowEmotionModal(false)}
+        lang={lang}
+        onEmotionDetected={(result) => {
+          setCurrentEmotion(result.emotion);
+          console.log('Emotion detected:', result);
+        }}
+      />
     </div>
   );
 };
