@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Network, LineChart, AlertTriangle, Ship, Home, Package, Settings, ChevronLeft, ChevronRight, Briefcase } from 'lucide-react';
+import { LayoutDashboard, Network, LineChart, AlertTriangle, Ship, Home, Package, Settings, ChevronLeft, ChevronRight, Briefcase, Database } from 'lucide-react';
 import { Language } from '../types';
 
 interface SidebarProps {
@@ -16,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, lang, isOpen
     home: { ko: '플랫폼 개요', en: 'Platform Overview' },
     dashboard: { ko: 'KPI 대시보드', en: 'KPI Dashboard' },
     ontology: { ko: '지식 그래프', en: 'Knowledge Graph' },
+    'ontology-tools': { ko: '온톨로지 도구', en: 'Ontology Tools' },
     booking: { ko: '부킹 분석', en: 'Booking Analysis' },
     risk: { ko: '취소/리스크', en: 'Risk & Cancel' },
     inventory: { ko: '재고/물류', en: 'Inventory' },
@@ -30,8 +31,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, lang, isOpen
     { id: 'home', label: translations.home[lang], icon: Home },
     { id: 'dashboard', label: translations.dashboard[lang], icon: LayoutDashboard },
     { id: 'ontology', label: translations.ontology[lang], icon: Network },
+    { id: 'ontology-tools', label: translations['ontology-tools'][lang], icon: Database },
     { id: 'booking', label: translations.booking[lang], icon: LineChart },
-    { id: 'scenarios', label: translations.scenarios[lang], icon: Briefcase }, // New Item
+    { id: 'scenarios', label: translations.scenarios[lang], icon: Briefcase },
     { id: 'risk', label: translations.risk[lang], icon: AlertTriangle },
     { id: 'inventory', label: translations.inventory[lang], icon: Package },
     { id: 'market', label: translations.market[lang], icon: Ship },

@@ -4,7 +4,8 @@ import {
   BarChart3, Users, Ship, ArrowRight, Sparkles, Brain, Eye, 
   Mic, Download, Share2, LayoutDashboard, Search, AlertTriangle,
   Zap, FileText, Globe, Target, CheckCircle2, Layers, Activity,
-  PieChart, LineChart, Smile, Volume2, FileBarChart
+  PieChart, LineChart, Smile, Volume2, FileBarChart, GitBranch,
+  Code, Lightbulb, Play
 } from 'lucide-react';
 import { Language } from '../types';
 
@@ -200,6 +201,78 @@ const Home: React.FC<HomeProps> = ({ lang }) => {
       features: ['라인 차트', '바 차트', '파이 차트', '에어리어 차트', '툴팁/줌'],
       color: 'indigo',
       category: 'viz'
+    },
+
+    // 온톨로지 고급 도구 (7개) ⭐ NEW!
+    {
+      id: 'ontology-stats',
+      icon: <Database className="w-8 h-8" />,
+      title: { ko: '온톨로지 통계 대시보드', en: 'Ontology Statistics Dashboard' },
+      description: { ko: '53개 노드, 127개 관계 실시간 분석', en: '53 nodes, 127 relations real-time analysis' },
+      features: ['전체 노드/엣지 수', '평균 연결도 2.4', '네트워크 밀도 18%', '타입별 분포', '최대 중심성 분석'],
+      color: 'blue',
+      category: 'data',
+      isNew: true
+    },
+    {
+      id: 'path-finder',
+      icon: <GitBranch className="w-8 h-8" />,
+      title: { ko: '경로 탐색 기능', en: 'Path Finder' },
+      description: { ko: '노드 간 최단 경로 및 모든 경로 찾기', en: 'Find shortest and all paths between nodes' },
+      features: ['최단 경로 찾기', '모든 경로 나열', '경로 시각화', '홉 수 표시', '관계 타입 표시'],
+      color: 'green',
+      category: 'data',
+      isNew: true
+    },
+    {
+      id: 'node-impact',
+      icon: <Target className="w-8 h-8" />,
+      title: { ko: '노드 영향도 분석', en: 'Node Impact Analysis' },
+      description: { ko: '노드 제거 시 영향 평가 및 권장사항', en: 'Impact assessment and recommendations' },
+      features: ['직접/간접 연결 분석', '중요도 점수 (0-10)', '제거 시 영향 평가', '심각도별 분류', '권장 사항 생성'],
+      color: 'orange',
+      category: 'data',
+      isNew: true
+    },
+    {
+      id: 'sparql-builder',
+      icon: <Code className="w-8 h-8" />,
+      title: { ko: 'SPARQL 쿼리 빌더', en: 'SPARQL Query Builder' },
+      description: { ko: '6개 템플릿 및 실시간 쿼리 실행', en: '6 templates with real-time execution' },
+      features: ['6개 사전 정의 템플릿', '쿼리 편집기', '실시간 실행', 'CSV 내보내기', '쿼리 복사'],
+      color: 'purple',
+      category: 'data',
+      isNew: true
+    },
+    {
+      id: 'ai-recommendations',
+      icon: <Lightbulb className="w-8 h-8" />,
+      title: { ko: 'AI 추천 엔진', en: 'AI Recommendation Engine' },
+      description: { ko: '7가지 온톨로지 개선 추천 자동 생성', en: '7 ontology improvement recommendations' },
+      features: ['누락 관계 탐지', '새 엔티티 제안', '구조 최적화', '데이터 품질 검증', '신뢰도 87-98%'],
+      color: 'yellow',
+      category: 'ai',
+      isNew: true
+    },
+    {
+      id: 'ontology-simulator',
+      icon: <Play className="w-8 h-8" />,
+      title: { ko: '온톨로지 시뮬레이터', en: 'Ontology Simulator' },
+      description: { ko: 'What-if 시나리오 분석 및 ROI 계산', en: 'What-if scenario analysis with ROI' },
+      features: ['3개 사전 정의 시나리오', '실시간 영향도 계산', 'ROI 분석', '리스크 & 기회', '투자 회수 기간'],
+      color: 'teal',
+      category: 'ai',
+      isNew: true
+    },
+    {
+      id: 'viz-controller',
+      icon: <Layers className="w-8 h-8" />,
+      title: { ko: '시각화 컨트롤러', en: 'Visualization Controller' },
+      description: { ko: '5가지 레이아웃 및 고급 필터링', en: '5 layouts with advanced filtering' },
+      features: ['5가지 레이아웃', '줌 컨트롤 (50-200%)', '노드 타입 필터', '3가지 내보내기', '노드 크기 조절'],
+      color: 'indigo',
+      category: 'viz',
+      isNew: true
     },
 
     // 기타 (3개)

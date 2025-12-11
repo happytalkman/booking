@@ -9,6 +9,7 @@ import BookingAnalysis from './pages/BookingAnalysis';
 import RiskAnalysis from './pages/RiskAnalysis';
 import MarketIntel from './pages/MarketIntel';
 import Scenarios from './pages/Scenarios';
+import OntologyToolsPage from './pages/OntologyToolsPage';
 import AIChatAssistant from './components/AIChatAssistant';
 import BookmarksPanel from './components/BookmarksPanel';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
@@ -124,6 +125,7 @@ const AppContent: React.FC = () => {
       case 'home': return <Home lang={language} />;
       case 'dashboard': return <Dashboard lang={language} />;
       case 'ontology': return <KnowledgeGraph lang={language} />;
+      case 'ontology-tools': return <OntologyToolsPage lang={language} />;
       case 'booking': return <BookingAnalysis lang={language} />;
       case 'risk': return <RiskAnalysis lang={language} />;
       case 'inventory': return <Inventory lang={language} />;
@@ -138,6 +140,7 @@ const AppContent: React.FC = () => {
       home: { ko: '홈', en: 'Home' },
       dashboard: { ko: '대시보드', en: 'Dashboard' },
       ontology: { ko: '지식 그래프', en: 'Knowledge Graph' },
+      'ontology-tools': { ko: '온톨로지 고급 도구', en: 'Ontology Tools' },
       booking: { ko: '부킹 분석', en: 'Booking Analysis' },
       risk: { ko: '리스크 분석', en: 'Risk Analysis' },
       inventory: { ko: '재고 관리', en: 'Inventory' },
