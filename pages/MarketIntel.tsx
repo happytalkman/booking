@@ -3,6 +3,8 @@ import { Ship, Search, Newspaper, ExternalLink, Loader2, Anchor, BarChart2 } fro
 import { fetchMarketInsights } from '../services/geminiService';
 import { MarketInsight, Language } from '../types';
 import { ProfessionalMarketReport } from '../components/ProfessionalMarketReport';
+import MLPredictionPanel from '../components/MLPredictionPanel';
+import MarketSentimentAnalyzer from '../components/MarketSentimentAnalyzer';
 
 interface MarketIntelProps {
   lang: Language;
@@ -198,6 +200,16 @@ const MarketIntel: React.FC<MarketIntelProps> = ({ lang }) => {
               </button>
            </div>
         </div>
+      </div>
+
+      {/* Advanced ML Prediction Panel */}
+      <div className="mt-8">
+        <MLPredictionPanel lang={lang} />
+      </div>
+
+      {/* Market Sentiment Analyzer */}
+      <div className="mt-8">
+        <MarketSentimentAnalyzer lang={lang} />
       </div>
     </div>
   );

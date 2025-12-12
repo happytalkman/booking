@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMTC 새 기능 테스트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center">🧪 KMTC 새 기능 테스트</h1>
+        
+        <!-- PWA 기능 테스트 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">📱 PWA 기능 테스트</h2>
+            <div class="space-y-4">
+                <button id="testServiceWorker" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    서비스 워커 등록 테스트
+                </button>
+                <button id="testNotification" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    푸시 알림 권한 요청
+                </button>
+                <button id="testInstallPrompt" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                    앱 설치 프롬프트 테스트
+                </button>
+                <div id="pwaStatus" class="p-4 bg-gray-100 rounded"></div>
+            </div>
+        </div>
+
+        <!-- 알림 시스템 테스트 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">🔔 스마트 알림 시스템 테스트</h2>
+            <div class="space-y-4">
+                <button id="testLocalNotification" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                    로컬 알림 테스트
+                </button>
+                <button id="testAlertRule" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">
+                    알림 규칙 생성 테스트
+                </button>
+                <div id="notificationStatus" class="p-4 bg-gray-100 rounded"></div>
+            </div>
+        </div>
+
+        <!-- 데이터 저장 테스트 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">💾 데이터 저장 테스트</h2>
+            <div class="space-y-4">
+                <button id="testLocalStorage" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    로컬 스토리지 테스트
+                </button>
+                <button id="testCacheAPI" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600">
+                    캐시 API 테스트
+                </button>
+                <div id="storageStatus" class="p-4 bg-gray-100 rounded"></div>
+            </div>
+        </div>
+
+        <!-- 네트워크 상태 테스트 -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4">🌐 네트워크 상태 테스트</h2>
+            <div class="space-y-4">
+                <div id="networkStatus" class="p-4 bg-gray-100 rounded">
+                    네트워크 상태: <span id="onlineStatus" class="font-bold"></span>
+                </div>
+                <button id="testOfflineMode" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                    오프라인 모드 시뮬레이션
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PWA 기능 테스트
+        document.getElementById('testServiceWorker').addEventListener('click', async () => {
+            const status = document.getElementById('pwaStatus');
+            
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    status.innerHTML = `✅ 서비스 워커 등록 성공: ${registration.scope}`;
+                    status.className = 'p-4 bg-green-100 text-green-800 rounded';
+                } catch (error) {
+                    status.innerHTML = `❌ 서비스 워커 등록 실패: ${error.message}`;
+                    status.className = 'p-4 bg-red-100 text-red-800 rounded';
+                }
+            } else {
+                status.innerHTML = '❌ 서비스 워커를 지원하지 않는 브라우저입니다.';
+                status.className = 'p-4 bg-red-100 text-red-800 rounded';
+            }
+        });
+
+        document.getElementById('testNotification').addEventListener('click', async () => {
+            const status = document.getElementById('pwaStatus');
+            
+            if ('Notification' in window) {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    new Notification('KMTC 테스트 알림', {
+                        body: '푸시 알림이 성공적으로 작동합니다!',
+                        icon: '/icons/icon-192x192.png'
+                    });
+                    status.innerHTML = '✅ 알림 권한 허용됨 - 테스트 알림 발송';
+                    status.className = 'p-4 bg-green-100 text-green-800 rounded';
+                } else {
+                    status.innerHTML = '❌ 알림 권한이 거부되었습니다.';
+                    status.className = 'p-4 bg-red-100 text-red-800 rounded';
+                }
+            } else {
+                status.innerHTML = '❌ 알림을 지원하지 않는 브라우저입니다.';
+                status.className = 'p-4 bg-red-100 text-red-800 rounded';
+            }
+        });
+
+        document.getElementById('testInstallPrompt').addEventListener('click', () => {
+            const status = document.getElementById('pwaStatus');
+            
+            // beforeinstallprompt 이벤트가 발생했는지 확인
+            if (window.deferredPrompt) {
+                window.deferredPrompt.prompt();
+                status.innerHTML = '✅ 앱 설치 프롬프트 표시됨';
+                status.className = 'p-4 bg-green-100 text-green-800 rounded';
+            } else {
+                status.innerHTML = '⚠️ 앱 설치 조건이 충족되지 않았거나 이미 설치됨';
+                status.className = 'p-4 bg-yellow-100 text-yellow-800 rounded';
+            }
+        });
+
+        // 알림 시스템 테스트
+        document.getElementById('testLocalNotification').addEventListener('click', () => {
+            const status = document.getElementById('notificationStatus');
+            
+            // 가상의 알림 데이터 생성
+            const mockAlert = {
+                id: Date.now().toString(),
+                type: 'rate_drop',
+                title: '테스트 운임 하락 알림',
+                message: '한국-LA 서안 항로 운임이 $2,750으로 하락했습니다.',
+                timestamp: new Date(),
+                priority: 'high'
+            };
+            
+            // 로컬 스토리지에 저장
+            const alerts = JSON.parse(localStorage.getItem('testAlerts') || '[]');
+            alerts.unshift(mockAlert);
+            localStorage.setItem('testAlerts', JSON.stringify(alerts));
+            
+            status.innerHTML = `✅ 테스트 알림 생성됨: ${mockAlert.title}`;
+            status.className = 'p-4 bg-green-100 text-green-800 rounded';
+        });
+
+        document.getElementById('testAlertRule').addEventListener('click', () => {
+            const status = document.getElementById('notificationStatus');
+            
+            // 가상의 알림 규칙 생성
+            const mockRule = {
+                id: Date.now().toString(),
+                name: '테스트 LA 항로 알림',
+                type: 'rate_threshold',
+                enabled: true,
+                conditions: {
+                    routes: ['kr-la'],
+                    threshold: 2800,
+                    comparison: 'below'
+                },
+                channels: { push: true, email: true, sms: false },
+                frequency: 'immediate',
+                priority: 'high'
+            };
+            
+            // 로컬 스토리지에 저장
+            const rules = JSON.parse(localStorage.getItem('notificationRules') || '[]');
+            rules.push(mockRule);
+            localStorage.setItem('notificationRules', JSON.stringify(rules));
+            
+            status.innerHTML = `✅ 알림 규칙 생성됨: ${mockRule.name}`;
+            status.className = 'p-4 bg-green-100 text-green-800 rounded';
+        });
+
+        // 데이터 저장 테스트
+        document.getElementById('testLocalStorage').addEventListener('click', () => {
+            const status = document.getElementById('storageStatus');
+            
+            try {
+                const testData = {
+                    timestamp: new Date().toISOString(),
+                    testValue: Math.random()
+                };
+                
+                localStorage.setItem('kmtc_test', JSON.stringify(testData));
+                const retrieved = JSON.parse(localStorage.getItem('kmtc_test'));
+                
+                status.innerHTML = `✅ 로컬 스토리지 테스트 성공<br>저장된 데이터: ${JSON.stringify(retrieved, null, 2)}`;
+                status.className = 'p-4 bg-green-100 text-green-800 rounded';
+            } catch (error) {
+                status.innerHTML = `❌ 로컬 스토리지 테스트 실패: ${error.message}`;
+                status.className = 'p-4 bg-red-100 text-red-800 rounded';
+            }
+        });
+
+        document.getElementById('testCacheAPI').addEventListener('click', async () => {
+            const status = document.getElementById('storageStatus');
+            
+            if ('caches' in window) {
+                try {
+                    const cache = await caches.open('kmtc-test-cache');
+                    const testResponse = new Response(JSON.stringify({
+                        message: 'Cache API 테스트 성공',
+                        timestamp: new Date().toISOString()
+                    }));
+                    
+                    await cache.put('/test-cache', testResponse);
+                    const cached = await cache.match('/test-cache');
+                    const data = await cached.json();
+                    
+                    status.innerHTML = `✅ 캐시 API 테스트 성공<br>캐시된 데이터: ${JSON.stringify(data, null, 2)}`;
+                    status.className = 'p-4 bg-green-100 text-green-800 rounded';
+                } catch (error) {
+                    status.innerHTML = `❌ 캐시 API 테스트 실패: ${error.message}`;
+                    status.className = 'p-4 bg-red-100 text-red-800 rounded';
+                }
+            } else {
+                status.innerHTML = '❌ 캐시 API를 지원하지 않는 브라우저입니다.';
+                status.className = 'p-4 bg-red-100 text-red-800 rounded';
+            }
+        });
+
+        // 네트워크 상태 모니터링
+        function updateNetworkStatus() {
+            const status = document.getElementById('onlineStatus');
+            if (navigator.onLine) {
+                status.textContent = '온라인 ✅';
+                status.className = 'font-bold text-green-600';
+            } else {
+                status.textContent = '오프라인 ❌';
+                status.className = 'font-bold text-red-600';
+            }
+        }
+
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+
+        document.getElementById('testOfflineMode').addEventListener('click', () => {
+            alert('개발자 도구 > Network 탭에서 "Offline" 체크박스를 선택하여 오프라인 모드를 테스트할 수 있습니다.');
+        });
+
+        // beforeinstallprompt 이벤트 리스너
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+            console.log('PWA 설치 프롬프트 준비됨');
+        });
+
+        // 페이지 로드 시 초기 상태 표시
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('KMTC 새 기능 테스트 페이지 로드됨');
+            
+            // PWA 지원 여부 확인
+            const pwaStatus = document.getElementById('pwaStatus');
+            const features = [];
+            
+            if ('serviceWorker' in navigator) features.push('Service Worker ✅');
+            else features.push('Service Worker ❌');
+            
+            if ('Notification' in window) features.push('Notifications ✅');
+            else features.push('Notifications ❌');
+            
+            if ('caches' in window) features.push('Cache API ✅');
+            else features.push('Cache API ❌');
+            
+            pwaStatus.innerHTML = `브라우저 PWA 지원 현황:<br>${features.join('<br>')}`;
+            
+            // 자동으로 기본 테스트 실행
+            setTimeout(() => {
+                console.log('🚀 자동 기본 테스트 시작');
+                runBasicTests();
+            }, 1000);
+        });
+
+        // 기본 테스트 자동 실행
+        function runBasicTests() {
+            console.log('📊 기본 데이터 구조 테스트');
+            
+            // 알림 규칙 테스트 데이터 생성
+            const testRule = {
+                id: Date.now().toString(),
+                name: '자동 테스트 LA 항로 알림',
+                type: 'rate_threshold',
+                enabled: true,
+                conditions: {
+                    routes: ['kr-la'],
+                    threshold: 2800,
+                    comparison: 'below'
+                },
+                channels: { push: true, email: true, sms: false },
+                frequency: 'immediate',
+                priority: 'high'
+            };
+            
+            // 로컬 스토리지에 저장
+            try {
+                const existingRules = JSON.parse(localStorage.getItem('notificationRules') || '[]');
+                existingRules.push(testRule);
+                localStorage.setItem('notificationRules', JSON.stringify(existingRules));
+                console.log('✅ 알림 규칙 자동 생성 완료:', testRule.name);
+            } catch (error) {
+                console.error('❌ 알림 규칙 생성 실패:', error);
+            }
+            
+            // 부킹 히스토리 테스트 데이터 생성
+            const testBooking = {
+                id: `BK${Date.now()}`,
+                bookingNumber: `KMTC${new Date().toISOString().slice(0, 10).replace(/-/g, '')}001`,
+                route: 'kr-la',
+                containerType: '40HC',
+                quantity: Math.floor(Math.random() * 50) + 10,
+                rate: 2500 + Math.floor(Math.random() * 500),
+                bookingDate: new Date(),
+                status: 'confirmed',
+                aiRecommended: Math.random() > 0.5,
+                savings: Math.floor(Math.random() * 200) + 50
+            };
+            
+            try {
+                const existingBookings = JSON.parse(localStorage.getItem('testBookings') || '[]');
+                existingBookings.push(testBooking);
+                localStorage.setItem('testBookings', JSON.stringify(existingBookings));
+                console.log('✅ 부킹 데이터 자동 생성 완료:', testBooking.bookingNumber);
+            } catch (error) {
+                console.error('❌ 부킹 데이터 생성 실패:', error);
+            }
+            
+            // 협업 데이터 테스트
+            const testCollaboration = {
+                id: `collab-${Date.now()}`,
+                bookingNumber: testBooking.bookingNumber,
+                sharedBy: 'Test User',
+                sharedAt: new Date(),
+                status: 'pending',
+                comments: [
+                    {
+                        id: `comment-${Date.now()}`,
+                        author: 'Auto Tester',
+                        content: '자동 테스트로 생성된 댓글입니다.',
+                        timestamp: new Date(),
+                        likes: 0,
+                        liked: false
+                    }
+                ]
+            };
+            
+            try {
+                const existingCollabs = JSON.parse(localStorage.getItem('testCollaborations') || '[]');
+                existingCollabs.push(testCollaboration);
+                localStorage.setItem('testCollaborations', JSON.stringify(existingCollabs));
+                console.log('✅ 협업 데이터 자동 생성 완료:', testCollaboration.id);
+            } catch (error) {
+                console.error('❌ 협업 데이터 생성 실패:', error);
+            }
+            
+            console.log('🎉 기본 테스트 데이터 생성 완료');
+            
+            // 저장된 데이터 확인
+            const savedRules = JSON.parse(localStorage.getItem('notificationRules') || '[]');
+            const savedBookings = JSON.parse(localStorage.getItem('testBookings') || '[]');
+            const savedCollabs = JSON.parse(localStorage.getItem('testCollaborations') || '[]');
+            
+            console.log(`📊 저장된 데이터 현황:
+- 알림 규칙: ${savedRules.length}개
+- 부킹 데이터: ${savedBookings.length}개  
+- 협업 데이터: ${savedCollabs.length}개`);
+        }
+    </script>
+</body>
+</html>

@@ -3,6 +3,40 @@ import { Briefcase, ChevronRight, CheckCircle2, AlertTriangle, Calendar, UserX, 
 import { Language, ScenarioDef } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
+// CSS 애니메이션 추가
+const styles = `
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes scaleIn {
+    from { 
+      opacity: 0; 
+      transform: scale(0.9); 
+    }
+    to { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+`;
+
+// 스타일 주입
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = styles;
+  document.head.appendChild(styleSheet);
+}
+
 interface ScenariosProps {
   lang: Language;
 }
@@ -10,6 +44,9 @@ interface ScenariosProps {
 const Scenarios: React.FC<ScenariosProps> = ({ lang }) => {
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
+  const [completedActionItems, setCompletedActionItems] = useState<{[key: string]: boolean[]}>({});
+  const [completedScenarios, setCompletedScenarios] = useState<string[]>([]);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   const t = {
     title: { ko: '실무 시나리오 시뮬레이션', en: 'Workflow Scenario Simulation' },
@@ -224,6 +261,59 @@ const Scenarios: React.FC<ScenariosProps> = ({ lang }) => {
 
   const handleReset = () => {
     setCurrentStep(0);
+    if (activeScenarioId) {
+      setCompletedActionItems(prev => ({
+        ...prev,
+        [activeScenarioId]: []
+      }));
+    }
+  };
+
+  const handleActionItemToggle = (stepIndex: number, itemIndex: number) => {
+    if (!activeScenarioId) return;
+    
+    const key = `${activeScenarioId}-${stepIndex}`;
+    setCompletedActionItems(prev => {
+      const current = prev[key] || [];
+      const newItems = [...current];
+      newItems[itemIndex] = !newItems[itemIndex];
+      return {
+        ...prev,
+        [key]: newItems
+      };
+    });
+  };
+
+  const handleCompleteScenario = () => {
+    if (!activeScenarioId) return;
+    
+    setCompletedScenarios(prev => [...prev, activeScenarioId]);
+    setShowCompletionModal(true);
+    
+    // 3초 후 자동으로 목록으로 돌아가기
+    setTimeout(() => {
+      setShowCompletionModal(false);
+      setActiveScenarioId(null);
+      setCurrentStep(0);
+    }, 3000);
+  };
+
+  const isScenarioCompleted = (scenarioId: string) => {
+    return completedScenarios.includes(scenarioId);
+  };
+
+  const getActionItemsForCurrentStep = () => {
+    if (!activeScenarioId) return [];
+    const key = `${activeScenarioId}-${currentStep}`;
+    return completedActionItems[key] || [];
+  };
+
+  const areAllActionItemsCompleted = () => {
+    const currentActionItems = activeScenario?.steps[currentStep]?.actionItems;
+    if (!currentActionItems) return true;
+    
+    const completedItems = getActionItemsForCurrentStep();
+    return currentActionItems.every((_, index) => completedItems[index]);
   };
 
   return (
@@ -244,13 +334,29 @@ const Scenarios: React.FC<ScenariosProps> = ({ lang }) => {
               <div 
                 key={scenario.id}
                 onClick={() => { setActiveScenarioId(scenario.id); setCurrentStep(0); }}
-                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md cursor-pointer transition-all hover:border-blue-300 dark:hover:border-blue-600 group"
+                className={`bg-white dark:bg-slate-800 rounded-xl border p-6 shadow-sm hover:shadow-md cursor-pointer transition-all group relative ${
+                  isScenarioCompleted(scenario.id)
+                    ? 'border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/10'
+                    : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600'
+                }`}
               >
                 <div className="flex items-start justify-between mb-4">
-                   <div className={`p-3 rounded-xl ${scenario.color} bg-opacity-10`}>
+                   <div className={`p-3 rounded-xl ${scenario.color} bg-opacity-10 relative`}>
                       <Icon className={`w-8 h-8 ${scenario.color.replace('bg-', 'text-')}`} />
+                      {isScenarioCompleted(scenario.id) && (
+                        <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1">
+                          <CheckCircle2 className="w-4 h-4 text-white" />
+                        </div>
+                      )}
                    </div>
-                   <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-blue-500 transition-colors" />
+                   {isScenarioCompleted(scenario.id) ? (
+                     <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                       <span className="text-sm font-bold">완료</span>
+                       <CheckCircle2 className="w-5 h-5" />
+                     </div>
+                   ) : (
+                     <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-blue-500 transition-colors" />
+                   )}
                 </div>
                 <h3 className="text-xl font-bold mb-2">{scenario.title}</h3>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
@@ -340,12 +446,38 @@ const Scenarios: React.FC<ScenariosProps> = ({ lang }) => {
                     {activeScenario.steps[currentStep].actionItems && (
                        <div className="space-y-3">
                           <h4 className="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wide">Action Items</h4>
-                          {activeScenario.steps[currentStep].actionItems?.map((item, idx) => (
-                             <div key={idx} className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-lg">
-                                <input type="checkbox" className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" />
-                                <span className="text-sm text-slate-700 dark:text-slate-300">{item}</span>
-                             </div>
-                          ))}
+                          {activeScenario.steps[currentStep].actionItems?.map((item, idx) => {
+                            const completedItems = getActionItemsForCurrentStep();
+                            const isCompleted = completedItems[idx] || false;
+                            
+                            return (
+                              <div 
+                                key={idx} 
+                                className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
+                                  isCompleted 
+                                    ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30' 
+                                    : 'bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30'
+                                }`}
+                              >
+                                <input 
+                                  type="checkbox" 
+                                  checked={isCompleted}
+                                  onChange={() => handleActionItemToggle(currentStep, idx)}
+                                  className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" 
+                                />
+                                <span className={`text-sm transition-all ${
+                                  isCompleted 
+                                    ? 'text-green-700 dark:text-green-300 line-through' 
+                                    : 'text-slate-700 dark:text-slate-300'
+                                }`}>
+                                  {item}
+                                </span>
+                                {isCompleted && (
+                                  <CheckCircle2 className="w-4 h-4 text-green-600 ml-auto" />
+                                )}
+                              </div>
+                            );
+                          })}
                        </div>
                     )}
                  </div>
@@ -358,24 +490,73 @@ const Scenarios: React.FC<ScenariosProps> = ({ lang }) => {
                     >
                        {t.reset[lang]}
                     </button>
-                    <button 
-                       onClick={handleNext}
-                       disabled={currentStep === activeScenario.steps.length - 1}
-                       className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-500/30 transition font-bold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                       {currentStep === activeScenario.steps.length - 1 ? (
-                          <>
-                             <CheckCircle2 className="w-4 h-4" /> {t.complete[lang]}
-                          </>
-                       ) : (
-                          <>
-                             {t.next[lang]} <ArrowRight className="w-4 h-4" />
-                          </>
-                       )}
-                    </button>
+                    
+                    {currentStep === activeScenario.steps.length - 1 ? (
+                      <button 
+                         onClick={handleCompleteScenario}
+                         disabled={!areAllActionItemsCompleted()}
+                         className="px-8 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white rounded-lg shadow-lg shadow-green-500/30 transition font-bold text-sm flex items-center gap-2 disabled:cursor-not-allowed"
+                      >
+                         <CheckCircle2 className="w-4 h-4" /> {t.complete[lang]}
+                      </button>
+                    ) : (
+                      <button 
+                         onClick={handleNext}
+                         disabled={activeScenario.steps[currentStep].actionItems && !areAllActionItemsCompleted()}
+                         className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white rounded-lg shadow-lg shadow-blue-500/30 transition font-bold text-sm flex items-center gap-2 disabled:cursor-not-allowed"
+                      >
+                         {t.next[lang]} <ArrowRight className="w-4 h-4" />
+                      </button>
+                    )}
                  </div>
               </div>
            </div>
+        </div>
+      )}
+
+      {/* 완료 모달 */}
+      {showCompletionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 max-w-md mx-4 text-center animate-scale-in">
+            <div className="mb-6">
+              <div className="w-20 h-20 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="w-12 h-12 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                {lang === 'ko' ? '시나리오 완료!' : 'Scenario Complete!'}
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400">
+                {lang === 'ko' 
+                  ? `"${activeScenario?.title}" 시나리오를 성공적으로 완료했습니다.`
+                  : `Successfully completed "${activeScenario?.title}" scenario.`
+                }
+              </p>
+            </div>
+            
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/10 rounded-lg">
+                <span className="text-slate-700 dark:text-slate-300">
+                  {lang === 'ko' ? '완료된 단계' : 'Completed Steps'}
+                </span>
+                <span className="font-bold text-green-600 dark:text-green-400">
+                  {activeScenario?.steps.length}/{activeScenario?.steps.length}
+                </span>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
+                <span className="text-slate-700 dark:text-slate-300">
+                  {lang === 'ko' ? '완료된 액션 아이템' : 'Completed Actions'}
+                </span>
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {Object.values(completedActionItems).flat().filter(Boolean).length}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6 text-xs text-slate-500 dark:text-slate-400">
+              {lang === 'ko' ? '3초 후 자동으로 목록으로 돌아갑니다...' : 'Returning to list in 3 seconds...'}
+            </div>
+          </div>
         </div>
       )}
     </div>

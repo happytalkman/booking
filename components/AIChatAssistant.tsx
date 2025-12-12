@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, X, Bot, User, Loader2, Sparkles } from 'lucide-react';
+import { MessageSquare, Send, X, Bot, User, Loader2, Sparkles, BookOpen, TrendingUp, Brain, Zap } from 'lucide-react';
 import { sendMessageToAI } from '../services/geminiService';
+import { ragService } from '../services/ragService';
 import { ChatMessage, Language } from '../types';
 import { useApp } from '../contexts/AppContext';
 import VoiceAssistant from './VoiceAssistant';
@@ -8,6 +9,12 @@ import VoiceAssistant from './VoiceAssistant';
 interface AIChatAssistantProps {
   currentContext: string; // The active page or data context
   lang: Language;
+}
+
+interface EnhancedChatMessage extends ChatMessage {
+  sources?: string[];
+  confidence?: number;
+  isRAGResponse?: boolean;
 }
 
 const AIChatAssistant: React.FC<AIChatAssistantProps> = ({ currentContext, lang }) => {
@@ -25,25 +32,9 @@ const AIChatAssistant: React.FC<AIChatAssistantProps> = ({ currentContext, lang 
     setIsChatOpen(newState);
   };
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'welcome',
-      role: 'ai',
-      text: lang === 'ko' 
-        ? `안녕하세요! 저는 KMTC AI 어시스턴트입니다.\n현재 ${currentContext} 화면을 보고 계시네요.\n무엇을 도와드릴까요?` 
-        : `Hello! I am the KMTC AI Assistant.\nYou are viewing ${currentContext}.\nHow can I help you?`,
-      timestamp: new Date(),
-      suggestions: lang === 'ko' ? [
-        '현재 대시보드 데이터 분석해줘',
-        '주요 KPI 설명해줘',
-        '개선이 필요한 부분은?'
-      ] : [
-        'Analyze current dashboard data',
-        'Explain key KPIs',
-        'What needs improvement?'
-      ]
-    }
-  ]);
+  const [messages, setMessages] = useState<EnhancedChatMessage[]>([]);
+  const [isRAGMode, setIsRAGMode] = useState(true);
+  const [userPatterns, setUserPatterns] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -52,28 +43,43 @@ const AIChatAssistant: React.FC<AIChatAssistantProps> = ({ currentContext, lang 
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOpen]);
 
-  // Update welcome message when context changes, only if chat is empty or just has welcome
+  // Initialize chat and load user patterns
   useEffect(() => {
-    if (messages.length <= 1) {
-       setMessages([{
+    const initializeChat = async () => {
+      // Load user patterns
+      const patterns = ragService.analyzeUserPatterns('user_001');
+      setUserPatterns(patterns);
+      
+      // Get personalized recommendations
+      const recommendations = ragService.generatePersonalizedRecommendations('user_001');
+      
+      const welcomeMessage: EnhancedChatMessage = {
         id: 'welcome',
         role: 'ai',
         text: lang === 'ko' 
-          ? `안녕하세요! 저는 KMTC AI 어시스턴트입니다.\n현재 ${currentContext} 화면을 보고 계시네요.\n데이터 분석이나 의사결정에 도움이 필요하신가요?` 
-          : `Hello! I am the KMTC AI Assistant.\nYou are viewing ${currentContext}.\nDo you need help with data analysis or decision making?`,
+          ? `안녕하세요! 저는 고급 KMTC AI 어시스턴트입니다. 🚀\n\n현재 ${currentContext} 화면을 보고 계시네요.\n\n📊 개인화된 분석:\n• 선호 항로: ${patterns.preferredRoutes.join(', ') || '분석 중...'}\n• 평균 부킹 규모: ${patterns.averageBookingSize || 0} TEU\n• 총 절약액: $${patterns.costSavings.toLocaleString()}\n\n무엇을 도와드릴까요?` 
+          : `Hello! I'm your advanced KMTC AI Assistant! 🚀\n\nYou are viewing ${currentContext}.\n\n📊 Personalized Analysis:\n• Preferred Routes: ${patterns.preferredRoutes.join(', ') || 'Analyzing...'}\n• Average Booking Size: ${patterns.averageBookingSize || 0} TEU\n• Total Savings: $${patterns.costSavings.toLocaleString()}\n\nHow can I help you?`,
         timestamp: new Date(),
-        suggestions: lang === 'ko' ? [
-          '현재 대시보드 데이터 분석해줘',
-          '주요 KPI 설명해줘',
-          '개선이 필요한 부분은?'
+        suggestions: recommendations.length > 0 ? recommendations : (lang === 'ko' ? [
+          '내 부킹 패턴 분석해줘',
+          '최적 부킹 전략 추천해줘',
+          '비용 절약 방법은?'
         ] : [
-          'Analyze current dashboard data',
-          'Explain key KPIs',
-          'What needs improvement?'
-        ]
-      }]);
+          'Analyze my booking patterns',
+          'Recommend optimal booking strategy',
+          'How to save costs?'
+        ]),
+        isRAGResponse: true,
+        confidence: 0.9
+      };
+      
+      setMessages([welcomeMessage]);
+    };
+    
+    if (messages.length === 0) {
+      initializeChat();
     }
-  }, [currentContext, lang]);
+  }, [currentContext, lang, messages.length]);
 
   // Format AI response - remove markdown and improve readability
   const formatResponse = (text: string): string => {
@@ -141,7 +147,7 @@ const AIChatAssistant: React.FC<AIChatAssistantProps> = ({ currentContext, lang 
     const messageText = customInput || input;
     if (!messageText.trim()) return;
 
-    const userMsg: ChatMessage = {
+    const userMsg: EnhancedChatMessage = {
       id: Date.now().toString(),
       role: 'user',
       text: messageText,
@@ -153,20 +159,59 @@ const AIChatAssistant: React.FC<AIChatAssistantProps> = ({ currentContext, lang 
     setIsLoading(true);
 
     try {
-      const responseText = await sendMessageToAI(messageText, currentContext);
-      const formattedText = formatResponse(responseText);
-      const suggestions = generateSuggestions(formattedText, messageText);
+      let aiMsg: EnhancedChatMessage;
       
-      const aiMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'ai',
-        text: formattedText,
-        timestamp: new Date(),
-        suggestions
-      };
+      if (isRAGMode) {
+        // Use RAG-enhanced response
+        const ragResponse = await ragService.generateRAGResponse(
+          messageText, 
+          currentContext, 
+          'user_001'
+        );
+        
+        const formattedText = formatResponse(ragResponse.response);
+        
+        aiMsg = {
+          id: (Date.now() + 1).toString(),
+          role: 'ai',
+          text: formattedText,
+          timestamp: new Date(),
+          suggestions: ragResponse.recommendations,
+          sources: ragResponse.sources,
+          confidence: ragResponse.confidence,
+          isRAGResponse: true
+        };
+      } else {
+        // Use standard AI response
+        const responseText = await sendMessageToAI(messageText, currentContext);
+        const formattedText = formatResponse(responseText);
+        const suggestions = generateSuggestions(formattedText, messageText);
+        
+        aiMsg = {
+          id: (Date.now() + 1).toString(),
+          role: 'ai',
+          text: formattedText,
+          timestamp: new Date(),
+          suggestions,
+          isRAGResponse: false
+        };
+      }
+      
       setMessages(prev => [...prev, aiMsg]);
     } catch (error) {
       console.error("Chat error", error);
+      
+      // Fallback error message
+      const errorMsg: EnhancedChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'ai',
+        text: lang === 'ko' 
+          ? '죄송합니다. 일시적인 오류가 발생했습니다. 다시 시도해주세요.' 
+          : 'Sorry, there was a temporary error. Please try again.',
+        timestamp: new Date(),
+        confidence: 0.1
+      };
+      setMessages(prev => [...prev, errorMsg]);
     } finally {
       setIsLoading(false);
     }
@@ -185,19 +230,40 @@ const AIChatAssistant: React.FC<AIChatAssistantProps> = ({ currentContext, lang 
       {isOpen && (
         <div className="bg-white dark:bg-slate-800 w-80 md:w-96 h-[500px] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col mb-4 animate-fade-in-up overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-white/20 rounded-lg">
-                <Sparkles className="w-4 h-4 text-yellow-300" />
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white">
+            <div className="flex justify-between items-center mb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-white/20 rounded-lg">
+                  {isRAGMode ? <Brain className="w-4 h-4 text-yellow-300" /> : <Sparkles className="w-4 h-4 text-yellow-300" />}
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm">
+                    KMTC AI Assistant {isRAGMode && <span className="text-yellow-300">Pro</span>}
+                  </h3>
+                  <p className="text-[10px] text-blue-100 opacity-90">{currentContext}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-sm">KMTC AI Assistant</h3>
-                <p className="text-[10px] text-blue-100 opacity-90">{currentContext}</p>
-              </div>
+              <button onClick={handleToggle} className="hover:bg-white/20 p-1 rounded transition">
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <button onClick={handleToggle} className="hover:bg-white/20 p-1 rounded transition">
-              <X className="w-4 h-4" />
-            </button>
+            
+            {/* RAG Mode Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs">
+                <BookOpen className="w-3 h-3" />
+                <span>Knowledge Base</span>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isRAGMode}
+                  onChange={(e) => setIsRAGMode(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-9 h-5 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-yellow-400"></div>
+              </label>
+            </div>
           </div>
 
           {/* Messages Area */}
@@ -214,6 +280,19 @@ const AIChatAssistant: React.FC<AIChatAssistantProps> = ({ currentContext, lang 
                         ? 'bg-blue-600 text-white rounded-tr-none' 
                         : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-tl-none'
                     }`}>
+                      {/* RAG Mode Indicator */}
+                      {msg.role === 'ai' && msg.isRAGResponse && (
+                        <div className="flex items-center gap-1 mb-2 text-xs text-blue-600 dark:text-blue-400">
+                          <Brain className="w-3 h-3" />
+                          <span>Knowledge Enhanced</span>
+                          {msg.confidence && (
+                            <span className="ml-2 px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 rounded text-[10px]">
+                              {Math.round(msg.confidence * 100)}% confident
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      
                       {/* Format message with proper styling */}
                       {msg.text.split('\n').map((line, i) => {
                         // Check if line is a title (starts with number or is all caps)
@@ -234,6 +313,23 @@ const AIChatAssistant: React.FC<AIChatAssistantProps> = ({ currentContext, lang 
                           </div>
                         );
                       })}
+                      
+                      {/* Sources */}
+                      {msg.role === 'ai' && msg.sources && msg.sources.length > 0 && (
+                        <div className="mt-3 pt-2 border-t border-slate-200 dark:border-slate-600">
+                          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 mb-1">
+                            <BookOpen className="w-3 h-3" />
+                            <span>Sources:</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {msg.sources.map((source, i) => (
+                              <span key={i} className="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-[10px] rounded-full">
+                                {source}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

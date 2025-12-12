@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Network, LineChart, AlertTriangle, Ship, Home, Package, Settings, ChevronLeft, ChevronRight, Briefcase, Database } from 'lucide-react';
+import { LayoutDashboard, Network, LineChart, AlertTriangle, Ship, Home, Package, Settings, ChevronLeft, ChevronRight, Briefcase, Database, Zap, Users } from 'lucide-react';
 import { Language } from '../types';
 
 interface SidebarProps {
@@ -33,6 +33,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, lang, isOpen
     { id: 'ontology', label: translations.ontology[lang], icon: Network },
     { id: 'ontology-tools', label: translations['ontology-tools'][lang], icon: Database },
     { id: 'booking', label: translations.booking[lang], icon: LineChart },
+    { id: 'booking-history', label: lang === 'ko' ? '부킹 히스토리' : 'Booking History', icon: Database },
+    { id: 'auto-booking', label: lang === 'ko' ? '자동 부킹' : 'Auto Booking', icon: Zap },
+    { id: 'collaboration', label: lang === 'ko' ? '협업 센터' : 'Collaboration', icon: Users },
     { id: 'scenarios', label: translations.scenarios[lang], icon: Briefcase },
     { id: 'risk', label: translations.risk[lang], icon: AlertTriangle },
     { id: 'inventory', label: translations.inventory[lang], icon: Package },

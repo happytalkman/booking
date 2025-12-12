@@ -76,6 +76,9 @@ export interface ChatMessage {
   text: string;
   timestamp: Date;
   suggestions?: string[];
+  sources?: string[];
+  confidence?: number;
+  isRAGResponse?: boolean;
 }
 
 // Scenario Types

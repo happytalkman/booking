@@ -10,29 +10,53 @@ AI 기반 해운 물류 부킹 예측 및 최적화 시스템
 - **감사 로그**: 모든 로그인 활동 자동 기록
 - **보안**: 5분 유효시간, 5회 시도 제한, JWT 토큰
 
-### 2. 멀티 LLM AI 시스템
+### 📱 2. 스마트 알림 시스템 (NEW!)
+- **개인화된 알림 설정**: 운임 임계값, 선호 항로별 맞춤 알림
+- **PWA 푸시 알림**: 오프라인에서도 중요 알림 수신
+- **이메일/SMS 통합**: 다채널 알림 지원
+- **알림 히스토리 & 분석**: 알림 효과성 추적 및 개선
+
+### 📊 3. 부킹 히스토리 & 분석 대시보드 (NEW!)
+- **과거 부킹 패턴 분석**: 계절성, 트렌드, 성과 지표
+- **비용 절감 리포트**: AI 추천 vs 수동 부킹 효과 비교
+- **ROI 계산기**: 플랫폼 투자 대비 수익률 자동 계산
+- **데이터 내보내기**: CSV, PDF 리포트 생성
+
+### 👥 4. 협업 기능 (NEW!)
+- **부킹 공유 & 댓글**: 팀원간 부킹 정보 공유 및 토론
+- **승인 워크플로우**: 단계별 부킹 승인 프로세스
+- **팀 대시보드**: 협업 현황 및 성과 모니터링
+- **활동 피드**: 실시간 팀 활동 추적
+
+### 📱 5. PWA (Progressive Web App) (NEW!)
+- **앱 설치**: 홈 화면에 네이티브 앱처럼 설치
+- **오프라인 모드**: 인터넷 없이도 기본 기능 사용
+- **푸시 알림**: 백그라운드에서도 알림 수신
+- **빠른 로딩**: 캐싱으로 향상된 성능
+
+### 6. 멀티 LLM AI 시스템
 - **OpenRouter 통합**: GPT-4, Claude, Gemini 등 여러 AI 모델 지원
 - **자동 폴백**: 모델 장애 시 자동으로 다른 모델로 전환
 - **AI 챗봇**: 실시간 부킹 상담 및 추천
 
-### 3. 부킹 예측 및 추천
+### 7. 부킹 예측 및 추천
 - **ML 기반 예측**: TensorFlow.js로 30일 운임 예측
 - **AI 부킹 추천**: 지금 부킹/대기 권장/모니터링 3가지 액션 제공
 - **실시간 알림**: 운임 하락, 경쟁사 변경, 리스크, 기회 알림
 
-### 4. 시나리오 시뮬레이터
+### 8. 시나리오 시뮬레이터
 - **복합 변수 조정**: 유가, 홍해 리스크, 수요, 환율 동시 시뮬레이션
 - **예측 분석**: 각 시나리오별 운임 및 리스크 예측
 
-### 5. 경쟁사 벤치마킹
+### 9. 경쟁사 벤치마킹
 - **5개 선사 비교**: KMTC, Maersk, MSC, CMA CGM, Hapag-Lloyd
 - **실시간 지표**: 운임, 시장점유율, 정시도착률 비교
 
-### 6. 음성 AI 어시스턴트
+### 10. 음성 AI 어시스턴트
 - **Web Speech API**: 음성 입력 및 출력 지원
 - **핸즈프리 작업**: 음성으로 부킹 조회 및 추천 받기
 
-### 7. 데이터 품질 검증 (SHACL)
+### 11. 데이터 품질 검증 (SHACL)
 - **온톨로지 기반**: OWL2 해운 도메인 온톨로지
 - **SHACL 제약조건**: W3C 표준 데이터 품질 검증
 - **실시간 검증**: 화주, 부킹, 예측, 항로 데이터 무결성 보장
@@ -131,14 +155,20 @@ npm run preview
 ```
 kmtc-booking-platform/
 ├── components/          # React 컴포넌트
-│   ├── LoginPage.tsx           # 🔐 OTP 로그인 UI
+│   ├── LoginPage.tsx                    # 🔐 OTP 로그인 UI
+│   ├── SmartNotificationSettings.tsx   # 📱 스마트 알림 설정
+│   ├── NotificationHistory.tsx         # 📊 알림 히스토리 분석
+│   ├── BookingHistoryDashboard.tsx     # 📈 부킹 히스토리 대시보드
+│   ├── CollaborationPanel.tsx          # 👥 협업 센터
+│   ├── PWAInstallPrompt.tsx           # 📱 PWA 설치 프롬프트
 │   ├── AIChatAssistant.tsx
 │   ├── BookingRecommendation.tsx
-│   ├── DataQualityPanel.tsx    # SHACL 검증 UI
+│   ├── DataQualityPanel.tsx           # SHACL 검증 UI
 │   ├── MLPredictionPanel.tsx
 │   └── ...
 ├── services/           # 비즈니스 로직
 │   ├── authService.ts          # 🔐 인증 서비스
+│   ├── pwaService.ts           # 📱 PWA 서비스
 │   ├── openRouterService.ts
 │   ├── mlPrediction.ts
 │   ├── shaclValidator.ts       # SHACL 검증 서비스
@@ -147,6 +177,10 @@ kmtc-booking-platform/
 │   ├── index.js                # Express 서버
 │   ├── package.json
 │   └── .env.example
+├── public/             # 📱 PWA 파일
+│   ├── manifest.json           # PWA 매니페스트
+│   ├── sw.js                   # 서비스 워커
+│   └── icons/                  # PWA 아이콘
 ├── ontology/           # 시맨틱 웹 파일
 │   ├── kmtc_booking_ontology.ttl   # OWL2 온톨로지
 │   └── kmtc_booking_shacl.ttl      # SHACL 제약조건
@@ -192,7 +226,9 @@ kmtc-booking-platform/
 - `Ctrl + K`: AI 챗봇 열기
 - `Ctrl + D`: 다크모드 토글
 - `Ctrl + B`: 즐겨찾기 패널
-- `Ctrl + /`: 단축키 도움말
+- `Ctrl + H`: 홈으로 이동
+- `Ctrl + Shift + R`: 데이터 새로고침
+- `?`: 단축키 도움말
 
 ## 📊 데이터 흐름
 

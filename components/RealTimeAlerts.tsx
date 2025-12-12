@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X, TrendingDown, AlertTriangle, Ship, DollarSign, Clock, CheckCircle } from 'lucide-react';
+import { Bell, X, TrendingDown, AlertTriangle, Ship, DollarSign, Clock, CheckCircle, Settings, History } from 'lucide-react';
 import { Language } from '../types';
+import SmartNotificationSettings from './SmartNotificationSettings';
+import NotificationHistory from './NotificationHistory';
 
 interface Alert {
   id: string;
@@ -24,12 +26,16 @@ const RealTimeAlerts: React.FC<RealTimeAlertsProps> = ({ lang }) => {
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [showActionModal, setShowActionModal] = useState(false);
   const [actionCompleted, setActionCompleted] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const t = {
     title: { ko: '실시간 알림', en: 'Real-Time Alerts' },
     noAlerts: { ko: '새로운 알림이 없습니다', en: 'No new alerts' },
     markAllRead: { ko: '모두 읽음', en: 'Mark All Read' },
     clearAll: { ko: '모두 지우기', en: 'Clear All' },
+    settings: { ko: '설정', en: 'Settings' },
+    history: { ko: '히스토리', en: 'History' },
     viewDetails: { ko: '상세 보기', en: 'View Details' },
     takeAction: { ko: '조치하기', en: 'Take Action' },
     high: { ko: '높음', en: 'High' },
@@ -288,22 +294,40 @@ const RealTimeAlerts: React.FC<RealTimeAlertsProps> = ({ lang }) => {
             </div>
 
             {/* Actions */}
-            {alerts.length > 0 && (
-              <div className="p-3 border-b border-slate-200 dark:border-slate-700 flex gap-2">
+            <div className="p-3 border-b border-slate-200 dark:border-slate-700">
+              <div className="flex gap-2 mb-2">
                 <button
-                  onClick={markAllRead}
-                  className="flex-1 px-3 py-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition"
+                  onClick={() => setShowSettings(true)}
+                  className="flex-1 px-3 py-1.5 text-xs font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition flex items-center justify-center gap-1"
                 >
-                  {t.markAllRead[lang]}
+                  <Settings className="w-3 h-3" />
+                  {t.settings[lang]}
                 </button>
                 <button
-                  onClick={clearAll}
-                  className="flex-1 px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition"
+                  onClick={() => setShowHistory(true)}
+                  className="flex-1 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded transition flex items-center justify-center gap-1"
                 >
-                  {t.clearAll[lang]}
+                  <History className="w-3 h-3" />
+                  {t.history[lang]}
                 </button>
               </div>
-            )}
+              {alerts.length > 0 && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={markAllRead}
+                    className="flex-1 px-3 py-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition"
+                  >
+                    {t.markAllRead[lang]}
+                  </button>
+                  <button
+                    onClick={clearAll}
+                    className="flex-1 px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition"
+                  >
+                    {t.clearAll[lang]}
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Alerts List */}
             <div className="flex-1 overflow-y-auto">
@@ -451,6 +475,20 @@ const RealTimeAlerts: React.FC<RealTimeAlertsProps> = ({ lang }) => {
           </div>
         </>
       )}
+
+      {/* Smart Notification Settings Modal */}
+      <SmartNotificationSettings 
+        lang={lang}
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
+
+      {/* Notification History Modal */}
+      <NotificationHistory 
+        lang={lang}
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+      />
     </>
   );
 };

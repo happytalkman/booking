@@ -14,8 +14,13 @@ import AIChatAssistant from './components/AIChatAssistant';
 import BookmarksPanel from './components/BookmarksPanel';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
 import RealTimeAlerts from './components/RealTimeAlerts';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
+import BookingHistoryDashboard from './components/BookingHistoryDashboard';
+import CollaborationPanel from './components/CollaborationPanel';
+import AutoBookingEngine from './components/AutoBookingEngine';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { pwaService } from './services/pwaService';
 
 const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -127,6 +132,9 @@ const AppContent: React.FC = () => {
       case 'ontology': return <KnowledgeGraph lang={language} />;
       case 'ontology-tools': return <OntologyToolsPage lang={language} />;
       case 'booking': return <BookingAnalysis lang={language} />;
+      case 'booking-history': return <BookingHistoryDashboard lang={language} />;
+      case 'auto-booking': return <AutoBookingEngine lang={language} />;
+      case 'collaboration': return <CollaborationPanel lang={language} />;
       case 'risk': return <RiskAnalysis lang={language} />;
       case 'inventory': return <Inventory lang={language} />;
       case 'market': return <MarketIntel lang={language} />;
@@ -142,6 +150,9 @@ const AppContent: React.FC = () => {
       ontology: { ko: '지식 그래프', en: 'Knowledge Graph' },
       'ontology-tools': { ko: '온톨로지 고급 도구', en: 'Ontology Tools' },
       booking: { ko: '부킹 분석', en: 'Booking Analysis' },
+      'booking-history': { ko: '부킹 히스토리', en: 'Booking History' },
+      'auto-booking': { ko: '자동 부킹', en: 'Auto Booking' },
+      collaboration: { ko: '협업 센터', en: 'Collaboration' },
       risk: { ko: '리스크 분석', en: 'Risk Analysis' },
       inventory: { ko: '재고 관리', en: 'Inventory' },
       market: { ko: '시장 인텔리전스', en: 'Market Intelligence' },
@@ -279,6 +290,9 @@ const AppContent: React.FC = () => {
 
       {/* Keyboard Shortcuts Help */}
       <KeyboardShortcutsHelp isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt lang={language} />
 
       {/* Scroll To Top Button */}
       <button
