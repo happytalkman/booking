@@ -51,7 +51,7 @@ const BookingHistoryDashboard: React.FC<BookingHistoryDashboardProps> = ({ lang 
     overview: { ko: '개요', en: 'Overview' },
     trends: { ko: '트렌드', en: 'Trends' },
     savings: { ko: '절약 분석', en: 'Savings Analysis' },
-    roi: { ko: 'ROI 계산기', en: 'ROI Calculator' },
+    roiTab: { ko: 'ROI 계산기', en: 'ROI Calculator' },
     
     // Filters
     filters: { ko: '필터', en: 'Filters' },

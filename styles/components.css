@@ -1,0 +1,289 @@
+/* KMTC 플랫폼 통일 컴포넌트 스타일 */
+
+/* ===== 색상 변수 ===== */
+:root {
+  /* Primary Colors */
+  --primary-blue: #3b82f6;
+  --primary-blue-dark: #1d4ed8;
+  --primary-blue-light: #93c5fd;
+  
+  /* Success Colors */
+  --success-green: #22c55e;
+  --success-green-dark: #16a34a;
+  --success-green-light: #86efac;
+  
+  /* Warning Colors */
+  --warning-yellow: #eab308;
+  --warning-orange: #f97316;
+  --error-red: #ef4444;
+  
+  /* Background Colors */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-tertiary: #e2e8f0;
+  
+  /* Dark Mode Backgrounds */
+  --bg-dark-primary: #0f172a;
+  --bg-dark-secondary: #1e293b;
+  --bg-dark-tertiary: #334155;
+  
+  /* Text Colors */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  
+  /* Dark Mode Text */
+  --text-dark-primary: #f8fafc;
+  --text-dark-secondary: #cbd5e1;
+  --text-dark-tertiary: #94a3b8;
+  
+  /* Border Colors */
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-dark: #374151;
+  
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* ===== 기본 컴포넌트 스타일 ===== */
+
+/* 카드 스타일 */
+.kmtc-card {
+  @apply bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 transition-colors duration-200;
+}
+
+.kmtc-card-hover {
+  @apply kmtc-card hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200;
+}
+
+/* 버튼 스타일 */
+.kmtc-btn-primary {
+  @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.kmtc-btn-secondary {
+  @apply px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200 focus:ring-2 focus:ring-slate-500 focus:ring-offset-2;
+}
+
+.kmtc-btn-success {
+  @apply px-4 py-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-medium rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+}
+
+.kmtc-btn-warning {
+  @apply px-4 py-2 bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 text-white font-medium rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2;
+}
+
+.kmtc-btn-danger {
+  @apply px-4 py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-medium rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+}
+
+/* 아이콘 버튼 */
+.kmtc-btn-icon {
+  @apply p-2 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-offset-2;
+}
+
+.kmtc-btn-icon-primary {
+  @apply kmtc-btn-icon bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 focus:ring-blue-500;
+}
+
+.kmtc-btn-icon-secondary {
+  @apply kmtc-btn-icon bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 focus:ring-slate-500;
+}
+
+/* 입력 필드 스타일 */
+.kmtc-input {
+  @apply w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200;
+}
+
+.kmtc-textarea {
+  @apply kmtc-input resize-none;
+}
+
+.kmtc-select {
+  @apply kmtc-input cursor-pointer;
+}
+
+/* 레이블 스타일 */
+.kmtc-label {
+  @apply block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1;
+}
+
+.kmtc-label-required::after {
+  content: ' *';
+  @apply text-red-500;
+}
+
+/* 뱃지 스타일 */
+.kmtc-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.kmtc-badge-primary {
+  @apply kmtc-badge bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300;
+}
+
+.kmtc-badge-success {
+  @apply kmtc-badge bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300;
+}
+
+.kmtc-badge-warning {
+  @apply kmtc-badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300;
+}
+
+.kmtc-badge-danger {
+  @apply kmtc-badge bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300;
+}
+
+.kmtc-badge-secondary {
+  @apply kmtc-badge bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300;
+}
+
+/* 알림 스타일 */
+.kmtc-alert {
+  @apply p-4 rounded-lg border-l-4;
+}
+
+.kmtc-alert-info {
+  @apply kmtc-alert bg-blue-50 dark:bg-blue-900/20 border-blue-400 text-blue-800 dark:text-blue-300;
+}
+
+.kmtc-alert-success {
+  @apply kmtc-alert bg-green-50 dark:bg-green-900/20 border-green-400 text-green-800 dark:text-green-300;
+}
+
+.kmtc-alert-warning {
+  @apply kmtc-alert bg-yellow-50 dark:bg-yellow-900/20 border-yellow-400 text-yellow-800 dark:text-yellow-300;
+}
+
+.kmtc-alert-danger {
+  @apply kmtc-alert bg-red-50 dark:bg-red-900/20 border-red-400 text-red-800 dark:text-red-300;
+}
+
+/* 모달 스타일 */
+.kmtc-modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4;
+}
+
+.kmtc-modal {
+  @apply bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto;
+}
+
+.kmtc-modal-header {
+  @apply px-6 py-4 border-b border-slate-200 dark:border-slate-700;
+}
+
+.kmtc-modal-body {
+  @apply px-6 py-4;
+}
+
+.kmtc-modal-footer {
+  @apply px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex justify-end space-x-3;
+}
+
+/* 테이블 스타일 */
+.kmtc-table {
+  @apply w-full border-collapse;
+}
+
+.kmtc-table th {
+  @apply px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50;
+}
+
+.kmtc-table td {
+  @apply px-4 py-3 text-sm text-slate-900 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700;
+}
+
+.kmtc-table tbody tr:hover {
+  @apply bg-slate-50 dark:bg-slate-800/50;
+}
+
+/* 탭 스타일 */
+.kmtc-tabs {
+  @apply flex border-b border-slate-200 dark:border-slate-700;
+}
+
+.kmtc-tab {
+  @apply px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors duration-200 cursor-pointer;
+}
+
+.kmtc-tab-active {
+  @apply kmtc-tab text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20;
+}
+
+/* 로딩 스피너 */
+.kmtc-spinner {
+  @apply animate-spin rounded-full border-2 border-slate-200 border-t-blue-600;
+}
+
+/* 드롭다운 스타일 */
+.kmtc-dropdown {
+  @apply absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-50;
+}
+
+.kmtc-dropdown-item {
+  @apply block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200 cursor-pointer;
+}
+
+/* 프로그레스 바 */
+.kmtc-progress {
+  @apply w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2;
+}
+
+.kmtc-progress-bar {
+  @apply h-2 bg-blue-600 rounded-full transition-all duration-300;
+}
+
+/* 토글 스위치 */
+.kmtc-toggle {
+  @apply relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.kmtc-toggle-enabled {
+  @apply bg-blue-600;
+}
+
+.kmtc-toggle-disabled {
+  @apply bg-slate-200 dark:bg-slate-700;
+}
+
+.kmtc-toggle-button {
+  @apply inline-block h-4 w-4 transform rounded-full bg-white transition-transform;
+}
+
+.kmtc-toggle-button-enabled {
+  @apply translate-x-6;
+}
+
+.kmtc-toggle-button-disabled {
+  @apply translate-x-1;
+}
+
+/* 반응형 유틸리티 */
+.kmtc-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.kmtc-grid {
+  @apply grid gap-6;
+}
+
+.kmtc-grid-1 { @apply grid-cols-1; }
+.kmtc-grid-2 { @apply grid-cols-1 md:grid-cols-2; }
+.kmtc-grid-3 { @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3; }
+.kmtc-grid-4 { @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-4; }
+
+/* 애니메이션 */
+.kmtc-fade-in {
+  @apply animate-in fade-in duration-200;
+}
+
+.kmtc-slide-in {
+  @apply animate-in slide-in-from-bottom-4 duration-300;
+}
+
+.kmtc-scale-in {
+  @apply animate-in zoom-in-95 duration-200;
+}

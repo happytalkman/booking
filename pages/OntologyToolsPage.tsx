@@ -6,7 +6,7 @@ import PathFinder from '../components/PathFinder';
 import NodeImpactAnalysis from '../components/NodeImpactAnalysis';
 import SPARQLQueryBuilder from '../components/SPARQLQueryBuilder';
 import OntologyRecommendationEngine from '../components/OntologyRecommendationEngine';
-import OntologySimulator from '../components/OntologySimulator';
+
 import OntologyVisualizationController from '../components/OntologyVisualizationController';
 
 interface OntologyToolsPageProps {
@@ -83,7 +83,21 @@ const OntologyToolsPage: React.FC<OntologyToolsPageProps> = ({ lang }) => {
           {activeTab === 'impact' && <NodeImpactAnalysis lang={lang} />}
           {activeTab === 'sparql' && <SPARQLQueryBuilder lang={lang} />}
           {activeTab === 'recommendations' && <OntologyRecommendationEngine lang={lang} />}
-          {activeTab === 'simulator' && <OntologySimulator lang={lang} />}
+          {activeTab === 'simulator' && (
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+              <div className="text-center py-12">
+                <Play className="w-16 h-16 mx-auto text-slate-400 mb-4" />
+                <h3 className="text-xl font-semibold text-slate-600 dark:text-slate-400 mb-2">
+                  {lang === 'ko' ? '시뮬레이터 준비 중' : 'Simulator Coming Soon'}
+                </h3>
+                <p className="text-slate-500 dark:text-slate-500">
+                  {lang === 'ko' 
+                    ? '온톨로지 시뮬레이션 기능이 곧 추가될 예정입니다.' 
+                    : 'Ontology simulation features will be added soon.'}
+                </p>
+              </div>
+            </div>
+          )}
           {activeTab === 'visualization' && (
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">

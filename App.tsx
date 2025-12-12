@@ -10,14 +10,21 @@ import RiskAnalysis from './pages/RiskAnalysis';
 import MarketIntel from './pages/MarketIntel';
 import Scenarios from './pages/Scenarios';
 import OntologyToolsPage from './pages/OntologyToolsPage';
+import SimulationCenter from './pages/SimulationCenter';
 import AIChatAssistant from './components/AIChatAssistant';
 import BookmarksPanel from './components/BookmarksPanel';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
-import RealTimeAlerts from './components/RealTimeAlerts';
+import RealTimeAlertPanel from './components/RealTimeAlertPanel';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import BookingHistoryDashboard from './components/BookingHistoryDashboard';
 import CollaborationPanel from './components/CollaborationPanel';
 import AutoBookingEngine from './components/AutoBookingEngine';
+import APIStatusIndicator from './components/APIStatusIndicator';
+import AILearningDashboard from './components/AILearningDashboard';
+import SmartReportGenerator from './components/SmartReportGenerator';
+import RealEmotionDetection from './components/RealEmotionDetection';
+import SmartNotificationCenter from './components/SmartNotificationCenter';
+import AdvancedAnalyticsDashboard from './components/AdvancedAnalyticsDashboard';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { pwaService } from './services/pwaService';
@@ -135,6 +142,7 @@ const AppContent: React.FC = () => {
       case 'booking-history': return <BookingHistoryDashboard lang={language} />;
       case 'auto-booking': return <AutoBookingEngine lang={language} />;
       case 'collaboration': return <CollaborationPanel lang={language} />;
+      case 'simulation': return <SimulationCenter />;
       case 'risk': return <RiskAnalysis lang={language} />;
       case 'inventory': return <Inventory lang={language} />;
       case 'market': return <MarketIntel lang={language} />;
@@ -153,6 +161,7 @@ const AppContent: React.FC = () => {
       'booking-history': { ko: '부킹 히스토리', en: 'Booking History' },
       'auto-booking': { ko: '자동 부킹', en: 'Auto Booking' },
       collaboration: { ko: '협업 센터', en: 'Collaboration' },
+      simulation: { ko: '시뮬레이션 센터', en: 'Simulation Center' },
       risk: { ko: '리스크 분석', en: 'Risk Analysis' },
       inventory: { ko: '재고 관리', en: 'Inventory' },
       market: { ko: '시장 인텔리전스', en: 'Market Intelligence' },
@@ -198,9 +207,29 @@ const AppContent: React.FC = () => {
               </div>
 
               {/* Right: Controls */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 flex-wrap">
                   {/* Real-Time Alerts */}
-                  <RealTimeAlerts lang={language} />
+                  <RealTimeAlertPanel lang={language} />
+
+                  {/* AI Learning Dashboard */}
+                  <div className="relative">
+                    <AILearningDashboard lang={language} />
+                  </div>
+
+                  {/* Real Emotion Detection */}
+                  <div className="relative">
+                    <RealEmotionDetection lang={language} />
+                  </div>
+
+                  {/* Smart Notification Center */}
+                  <div className="relative">
+                    <SmartNotificationCenter lang={language} />
+                  </div>
+
+                  {/* Advanced Analytics Dashboard */}
+                  <div className="relative">
+                    <AdvancedAnalyticsDashboard lang={language} />
+                  </div>
 
                   {/* Refresh Button */}
                   <button
@@ -294,10 +323,22 @@ const AppContent: React.FC = () => {
       {/* PWA Install Prompt */}
       <PWAInstallPrompt lang={language} />
 
+      {/* API Status Indicator */}
+      <APIStatusIndicator />
+
+
+
+      {/* Smart Report Generator */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <SmartReportGenerator lang={language} />
+      </div>
+
+
+
       {/* Scroll To Top Button */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-24 p-3 bg-slate-800 dark:bg-slate-700 text-white rounded-full shadow-lg hover:bg-slate-700 dark:hover:bg-slate-600 transition-all duration-300 z-40 ${
+        className={`fixed bottom-16 right-4 p-3 bg-slate-800 dark:bg-slate-700 text-white rounded-full shadow-lg hover:bg-slate-700 dark:hover:bg-slate-600 transition-all duration-300 z-40 ${
           showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'
         }`}
         aria-label="Scroll to top"

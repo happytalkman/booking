@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { MarketInsight } from "../types";
 import { openRouterService } from "./openRouterService";
-import { getMockMarketInsight, getMockChatResponse } from "./mockData";
+
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
 const ai = apiKey && apiKey !== 'PLACEHOLDER_API_KEY' ? new GoogleGenAI({ apiKey }) : null;
@@ -51,9 +51,23 @@ export const fetchMarketInsights = async (query: string): Promise<MarketInsight>
     }
   }
 
-  // 3순위: Mock 데이터 (데모 모드)
-  console.log('Using mock data for market insights');
-  return getMockMarketInsight(query);
+  // 3순위: 기본 응답 (데모 모드)
+  console.log('Using fallback data for market insights');
+  return {
+    summary: `${query}에 대한 시장 분석 결과입니다.`,
+    trends: [
+      { metric: '운임 지수', value: 2750, change: 5.2, trend: 'up' as const },
+      { metric: '유가 변동', value: 72.5, change: -2.1, trend: 'down' as const },
+      { metric: '환율 (USD/KRW)', value: 1470, change: 1.8, trend: 'up' as const }
+    ],
+    recommendations: [
+      '현재 시장 상황을 고려한 운임 조정을 권장합니다.',
+      '유가 하락으로 인한 비용 절감 효과를 활용하세요.',
+      '환율 상승에 따른 리스크 관리가 필요합니다.'
+    ],
+    confidence: 0.75,
+    lastUpdated: new Date()
+  };
 };
 
 export const sendMessageToAI = async (message: string, context: string): Promise<string> => {
@@ -94,7 +108,19 @@ export const sendMessageToAI = async (message: string, context: string): Promise
     }
   }
 
-  // 3순위: Mock 응답 (데모 모드)
-  console.log('Using mock response for chat');
-  return getMockChatResponse(message);
+  // 3순위: 기본 응답 (데모 모드)
+  console.log('Using fallback response for chat');
+  
+  // 간단한 키워드 기반 응답
+  const lowerMessage = message.toLowerCase();
+  
+  if (lowerMessage.includes('운임') || lowerMessage.includes('요금')) {
+    return '현재 운임 시장은 계절적 요인과 유가 변동의 영향을 받고 있습니다. 구체적인 항로와 화물 종류를 알려주시면 더 정확한 분석을 제공할 수 있습니다.';
+  } else if (lowerMessage.includes('예측') || lowerMessage.includes('전망')) {
+    return 'AI 기반 예측 모델을 통해 향후 2-4주간의 시장 동향을 분석하고 있습니다. 현재 데이터를 바탕으로 안정적인 상승세가 예상됩니다.';
+  } else if (lowerMessage.includes('리스크') || lowerMessage.includes('위험')) {
+    return '현재 주요 리스크 요인으로는 유가 변동성, 환율 불안정성, 그리고 지정학적 긴장이 있습니다. 리스크 관리 전략을 수립하는 것이 중요합니다.';
+  } else {
+    return `"${message}"에 대한 질문을 받았습니다. 해운 물류 전문가로서 도움을 드리겠습니다. 더 구체적인 정보를 제공해주시면 정확한 답변을 드릴 수 있습니다.`;
+  }
 };

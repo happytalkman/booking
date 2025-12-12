@@ -3,14 +3,12 @@ import { DollarSign, Activity, Clock, BarChart3, Users, AlertTriangle, Target, S
 import KPICard from '../components/KPICard';
 import BookingRecommendation from '../components/BookingRecommendation';
 import HistoricalComparison from '../components/HistoricalComparison';
-import AdvancedSimulator from '../components/AdvancedSimulator';
-import CompetitorBenchmark from '../components/CompetitorBenchmark';
-import MLPredictionPanel from '../components/MLPredictionPanel';
+
 import { DataQualityPanel } from '../components/DataQualityPanel';
 import { KPIDetailModal } from '../components/KPIDetailModal';
 import { AIInsightCard } from '../components/AIInsightCard';
-import LiveVideoMonitor from '../components/LiveVideoMonitor';
-import { VoiceQnAPanel } from '../components/VoiceQnAPanel';
+
+
 import { KPI, Language } from '../types';
 
 interface DashboardProps {
@@ -159,11 +157,9 @@ const Dashboard: React.FC<DashboardProps> = ({ lang }) => {
       {/* AI Insight Card */}
       <AIInsightCard lang={lang} />
 
-      {/* Live Video Monitor */}
-      <LiveVideoMonitor lang={lang} />
 
-      {/* Voice Q&A Panel */}
-      <VoiceQnAPanel lang={lang} />
+
+
 
       {/* KPI Cards with Progress Bars */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -192,14 +188,7 @@ const Dashboard: React.FC<DashboardProps> = ({ lang }) => {
       {/* Historical Comparison Chart */}
       <HistoricalComparison lang={lang} />
 
-      {/* Advanced Simulator */}
-      <AdvancedSimulator lang={lang} />
 
-      {/* Competitor Benchmark */}
-      <CompetitorBenchmark lang={lang} />
-
-      {/* ML Prediction */}
-      <MLPredictionPanel lang={lang} />
 
       {/* Data Quality Panel (SHACL) */}
       <DataQualityPanel />

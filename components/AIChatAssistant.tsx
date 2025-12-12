@@ -4,7 +4,7 @@ import { sendMessageToAI } from '../services/geminiService';
 import { ragService } from '../services/ragService';
 import { ChatMessage, Language } from '../types';
 import { useApp } from '../contexts/AppContext';
-import VoiceAssistant from './VoiceAssistant';
+
 
 interface AIChatAssistantProps {
   currentContext: string; // The active page or data context
@@ -373,12 +373,7 @@ const AIChatAssistant: React.FC<AIChatAssistantProps> = ({ currentContext, lang 
 
           {/* Input Area */}
           <div className="p-3 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 space-y-2">
-            {/* Voice Assistant */}
-            <VoiceAssistant 
-              lang={lang} 
-              onVoiceInput={(text) => handleSend(text)}
-              lastResponse={messages.length > 0 ? messages[messages.length - 1].text : undefined}
-            />
+            {/* Voice Assistant - Removed */}
             
             {/* Text Input */}
             <div className="relative">

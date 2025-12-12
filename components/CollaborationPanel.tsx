@@ -316,32 +316,32 @@ const CollaborationPanel: React.FC<CollaborationPanelProps> = ({ lang }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header - 가독성 개선 */}
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <Users className="w-8 h-8 text-blue-600" />
-          <h1 className="text-3xl font-bold">{t.title[lang]}</h1>
+        <div className="flex items-center gap-4">
+          <Users className="w-10 h-10 text-blue-600" />
+          <h1 className="text-4xl font-bold text-slate-800 dark:text-slate-100">{t.title[lang]}</h1>
         </div>
         <button
           onClick={() => setShowShareModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 font-semibold text-base"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" />
           {t.shareBooking[lang]}
         </button>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs - 가독성 개선 */}
       <div className="border-b border-slate-200 dark:border-slate-700">
         <div className="flex space-x-8">
           {(['shared', 'activity', 'team'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm transition ${
+              className={`py-3 px-2 border-b-2 font-semibold text-base transition ${
                 activeTab === tab
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300'
               }`}
             >
               {tab === 'shared' && t.sharedBookings[lang]}
@@ -352,19 +352,19 @@ const CollaborationPanel: React.FC<CollaborationPanelProps> = ({ lang }) => {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters - 가독성 개선 */}
       {activeTab === 'shared' && (
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-slate-600" />
-              <span className="font-semibold">{t.filters[lang]}:</span>
+        <div className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div className="flex items-center gap-6 flex-wrap">
+            <div className="flex items-center gap-3">
+              <Filter className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+              <span className="font-bold text-lg text-slate-800 dark:text-slate-200">{t.filters[lang]}:</span>
             </div>
             
             <select
               value={filters.status}
               onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700"
+              className="px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-base font-medium text-slate-700 dark:text-slate-300"
             >
               <option value="all">{t.all[lang]}</option>
               <option value="pending">{t.pending[lang]}</option>
@@ -376,7 +376,7 @@ const CollaborationPanel: React.FC<CollaborationPanelProps> = ({ lang }) => {
             <select
               value={filters.priority}
               onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
-              className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700"
+              className="px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-base font-medium text-slate-700 dark:text-slate-300"
             >
               <option value="all">{t.all[lang]}</option>
               <option value="high">{t.high[lang]}</option>
@@ -395,40 +395,40 @@ const CollaborationPanel: React.FC<CollaborationPanelProps> = ({ lang }) => {
             {filteredBookings.map(booking => (
               <div 
                 key={booking.id} 
-                className={`bg-white dark:bg-slate-800 p-6 rounded-xl border-l-4 ${getPriorityColor(booking.priority)} border-r border-t border-b border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-lg transition`}
+                className={`bg-white dark:bg-slate-800 p-7 rounded-xl border-l-4 ${getPriorityColor(booking.priority)} border-r border-t border-b border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-lg transition-all duration-200`}
                 onClick={() => setSelectedBooking(booking)}
               >
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start mb-5">
                   <div>
-                    <h3 className="font-bold text-lg">{booking.bookingNumber}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <h3 className="font-bold text-xl text-slate-800 dark:text-slate-100">{booking.bookingNumber}</h3>
+                    <p className="text-base text-slate-600 dark:text-slate-400 mt-1">
                       {booking.route} • {booking.containerType} • {booking.quantity} TEU
                     </p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(booking.status)}`}>
+                  <span className={`px-4 py-2 rounded-full text-sm font-bold ${getStatusColor(booking.status)}`}>
                     {t[booking.status as keyof typeof t][lang]}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between mb-3">
-                  <div className="text-2xl font-bold text-green-600">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-3xl font-bold text-green-600">
                     ${booking.rate.toLocaleString()}
                   </div>
                   <div className="flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4 text-slate-400" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">{booking.comments.length}</span>
+                    <MessageCircle className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                    <span className="text-base font-semibold text-slate-700 dark:text-slate-300">{booking.comments.length}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-slate-500">
-                  <span>{lang === 'ko' ? `${booking.sharedBy}가 공유` : `Shared by ${booking.sharedBy}`}</span>
-                  <span>{getTimeAgo(booking.sharedAt)}</span>
+                <div className="flex items-center justify-between text-base text-slate-600 dark:text-slate-400">
+                  <span className="font-medium">{lang === 'ko' ? `${booking.sharedBy}가 공유` : `Shared by ${booking.sharedBy}`}</span>
+                  <span className="font-medium">{getTimeAgo(booking.sharedAt)}</span>
                 </div>
 
                 {booking.tags.length > 0 && (
-                  <div className="flex gap-2 mt-3">
+                  <div className="flex gap-2 mt-4">
                     {booking.tags.map(tag => (
-                      <span key={tag} className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs rounded-full">
+                      <span key={tag} className="px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-full">
                         {tag}
                       </span>
                     ))}
@@ -441,25 +441,25 @@ const CollaborationPanel: React.FC<CollaborationPanelProps> = ({ lang }) => {
           {/* Booking Details */}
           {selectedBooking && (
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 h-fit">
-              {/* Header */}
-              <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+              {/* Header - 가독성 개선 */}
+              <div className="p-7 border-b border-slate-200 dark:border-slate-700">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h2 className="text-xl font-bold">{selectedBooking.bookingNumber}</h2>
-                    <p className="text-slate-600 dark:text-slate-400">{t.bookingDetails[lang]}</p>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{selectedBooking.bookingNumber}</h2>
+                    <p className="text-base text-slate-600 dark:text-slate-400 mt-1">{t.bookingDetails[lang]}</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     {selectedBooking.status === 'pending' && (
                       <>
                         <button
                           onClick={() => handleStatusChange(selectedBooking.id, 'approved')}
-                          className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm"
+                          className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-base font-semibold"
                         >
                           {t.approve[lang]}
                         </button>
                         <button
                           onClick={() => handleStatusChange(selectedBooking.id, 'rejected')}
-                          className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
+                          className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-base font-semibold"
                         >
                           {t.reject[lang]}
                         </button>
@@ -469,32 +469,32 @@ const CollaborationPanel: React.FC<CollaborationPanelProps> = ({ lang }) => {
                 </div>
               </div>
 
-              {/* Details */}
-              <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-                <div className="grid grid-cols-2 gap-4 text-sm">
+              {/* Details - 가독성 개선 */}
+              <div className="p-7 border-b border-slate-200 dark:border-slate-700">
+                <div className="grid grid-cols-2 gap-6 text-base">
                   <div>
-                    <span className="text-slate-600 dark:text-slate-400">Route:</span>
-                    <span className="ml-2 font-semibold">{selectedBooking.route}</span>
+                    <span className="text-slate-600 dark:text-slate-400 font-medium">Route:</span>
+                    <span className="ml-3 font-bold text-slate-800 dark:text-slate-200">{selectedBooking.route}</span>
                   </div>
                   <div>
-                    <span className="text-slate-600 dark:text-slate-400">Container:</span>
-                    <span className="ml-2 font-semibold">{selectedBooking.containerType}</span>
+                    <span className="text-slate-600 dark:text-slate-400 font-medium">Container:</span>
+                    <span className="ml-3 font-bold text-slate-800 dark:text-slate-200">{selectedBooking.containerType}</span>
                   </div>
                   <div>
-                    <span className="text-slate-600 dark:text-slate-400">Quantity:</span>
-                    <span className="ml-2 font-semibold">{selectedBooking.quantity} TEU</span>
+                    <span className="text-slate-600 dark:text-slate-400 font-medium">Quantity:</span>
+                    <span className="ml-3 font-bold text-slate-800 dark:text-slate-200">{selectedBooking.quantity} TEU</span>
                   </div>
                   <div>
-                    <span className="text-slate-600 dark:text-slate-400">Rate:</span>
-                    <span className="ml-2 font-semibold text-green-600">${selectedBooking.rate.toLocaleString()}</span>
+                    <span className="text-slate-600 dark:text-slate-400 font-medium">Rate:</span>
+                    <span className="ml-3 font-bold text-green-600 dark:text-green-400 text-lg">${selectedBooking.rate.toLocaleString()}</span>
                   </div>
                 </div>
 
-                <div className="mt-4">
-                  <span className="text-slate-600 dark:text-slate-400">Collaborators:</span>
-                  <div className="flex gap-2 mt-2">
+                <div className="mt-6">
+                  <span className="text-slate-600 dark:text-slate-400 font-medium text-base">Collaborators:</span>
+                  <div className="flex gap-3 mt-3">
                     {selectedBooking.collaborators.map(collaborator => (
-                      <span key={collaborator} className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs">
+                      <span key={collaborator} className="px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-full text-sm font-medium text-slate-700 dark:text-slate-300">
                         {collaborator}
                       </span>
                     ))}
@@ -502,38 +502,38 @@ const CollaborationPanel: React.FC<CollaborationPanelProps> = ({ lang }) => {
                 </div>
               </div>
 
-              {/* Comments */}
-              <div className="p-6">
-                <h3 className="font-bold mb-4">{t.comments[lang]} ({selectedBooking.comments.length})</h3>
+              {/* Comments - 가독성 개선 */}
+              <div className="p-7">
+                <h3 className="font-bold text-xl text-slate-800 dark:text-slate-100 mb-5">{t.comments[lang]} ({selectedBooking.comments.length})</h3>
                 
-                <div className="space-y-4 mb-4 max-h-60 overflow-y-auto">
+                <div className="space-y-5 mb-6 max-h-80 overflow-y-auto">
                   {selectedBooking.comments.map(comment => (
-                    <div key={comment.id} className="flex gap-3">
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                    <div key={comment.id} className="flex gap-4">
+                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
                           {comment.author.charAt(0)}
                         </span>
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-sm">{comment.author}</span>
-                          <span className={`text-xs ${getRoleColor(comment.authorRole)}`}>
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="font-bold text-base text-slate-800 dark:text-slate-200">{comment.author}</span>
+                          <span className={`text-sm font-semibold ${getRoleColor(comment.authorRole)}`}>
                             {t[comment.authorRole as keyof typeof t][lang]}
                           </span>
-                          <span className="text-xs text-slate-500">{getTimeAgo(comment.timestamp)}</span>
+                          <span className="text-sm text-slate-500 dark:text-slate-400">{getTimeAgo(comment.timestamp)}</span>
                         </div>
-                        <p className="text-sm text-slate-700 dark:text-slate-300 mb-2">{comment.content}</p>
-                        <div className="flex items-center gap-3">
+                        <p className="text-base text-slate-700 dark:text-slate-300 mb-3 leading-relaxed">{comment.content}</p>
+                        <div className="flex items-center gap-4">
                           <button
                             onClick={() => handleLikeComment(selectedBooking.id, comment.id)}
-                            className={`flex items-center gap-1 text-xs ${
-                              comment.liked ? 'text-blue-600' : 'text-slate-500 hover:text-blue-600'
+                            className={`flex items-center gap-2 text-sm font-medium ${
+                              comment.liked ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400'
                             } transition`}
                           >
-                            <ThumbsUp className="w-3 h-3" />
+                            <ThumbsUp className="w-4 h-4" />
                             {comment.likes}
                           </button>
-                          <button className="text-xs text-slate-500 hover:text-blue-600 transition">
+                          <button className="text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition">
                             {t.reply[lang]}
                           </button>
                         </div>
@@ -542,25 +542,25 @@ const CollaborationPanel: React.FC<CollaborationPanelProps> = ({ lang }) => {
                   ))}
                 </div>
 
-                {/* Add Comment */}
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold">U</span>
+                {/* Add Comment - 가독성 개선 */}
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">U</span>
                   </div>
                   <div className="flex-1">
                     <textarea
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       placeholder={t.writeComment[lang]}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm resize-none"
-                      rows={2}
+                      className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-base resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      rows={3}
                     />
                     <button
                       onClick={() => handleAddComment(selectedBooking.id)}
                       disabled={!newComment.trim()}
-                      className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+                      className="mt-3 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-base font-semibold"
                     >
-                      <Send className="w-4 h-4" />
+                      <Send className="w-5 h-5" />
                       {t.addComment[lang]}
                     </button>
                   </div>

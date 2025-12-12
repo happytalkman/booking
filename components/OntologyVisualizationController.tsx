@@ -36,8 +36,8 @@ const OntologyVisualizationController: React.FC<OntologyVisualizationControllerP
   const [zoom, setZoom] = useState(100);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
-    nodeTypes: ['shipper', 'route', 'booking', 'vessel', 'contract', 'marketIndex', 'competitor'],
-    relationTypes: ['uses', 'has', 'on', 'operates', 'governedBy', 'affects', 'competesWith'],
+    nodeTypes: ['shipper', 'shipOwner', 'route', 'booking', 'vessel', 'contract', 'port', 'cargo', 'freightForwarder', 'insurance', 'marketIndex', 'competitor'],
+    relationTypes: ['hasContract', 'makesBooking', 'ownsVessel', 'operatesOn', 'servesRoute', 'shipsCargo', 'usesForwarder', 'hasInsurance', 'competesOn', 'affectedBy'],
     minConnections: 0,
     maxConnections: 100,
     showLabels: true,
@@ -126,13 +126,18 @@ const OntologyVisualizationController: React.FC<OntologyVisualizationControllerP
   ];
 
   const nodeTypes = [
-    { id: 'shipper', label: { ko: '화주', en: 'Shipper' }, color: 'bg-blue-500' },
-    { id: 'route', label: { ko: '항로', en: 'Route' }, color: 'bg-green-500' },
-    { id: 'booking', label: { ko: '부킹', en: 'Booking' }, color: 'bg-purple-500' },
-    { id: 'vessel', label: { ko: '선박', en: 'Vessel' }, color: 'bg-orange-500' },
-    { id: 'contract', label: { ko: '계약', en: 'Contract' }, color: 'bg-pink-500' },
+    { id: 'shipper', label: { ko: '화주', en: 'Shipper' }, color: 'bg-blue-600' },
+    { id: 'shipOwner', label: { ko: '선주', en: 'Ship Owner' }, color: 'bg-emerald-600' },
+    { id: 'route', label: { ko: '항로', en: 'Route' }, color: 'bg-amber-500' },
+    { id: 'booking', label: { ko: '부킹', en: 'Booking' }, color: 'bg-emerald-500' },
+    { id: 'vessel', label: { ko: '선박', en: 'Vessel' }, color: 'bg-indigo-500' },
+    { id: 'contract', label: { ko: '계약', en: 'Contract' }, color: 'bg-violet-500' },
+    { id: 'port', label: { ko: '항만', en: 'Port' }, color: 'bg-cyan-600' },
+    { id: 'cargo', label: { ko: '화물', en: 'Cargo' }, color: 'bg-red-600' },
+    { id: 'freightForwarder', label: { ko: '포워더', en: 'Freight Forwarder' }, color: 'bg-orange-600' },
+    { id: 'insurance', label: { ko: '보험', en: 'Insurance' }, color: 'bg-green-600' },
     { id: 'marketIndex', label: { ko: '시장지표', en: 'Market Index' }, color: 'bg-red-500' },
-    { id: 'competitor', label: { ko: '경쟁사', en: 'Competitor' }, color: 'bg-yellow-500' }
+    { id: 'competitor', label: { ko: '경쟁사', en: 'Competitor' }, color: 'bg-slate-500' }
   ];
 
   return (

@@ -14,16 +14,23 @@ export interface KPI {
   color: string;
 }
 
-// Ontology Entity Types based on PDF
+// 확장된 화주 온톨로지 엔티티 타입
 export type EntityType = 
-  | 'SHIPPER' 
-  | 'BOOKING' 
-  | 'ROUTE' 
-  | 'VESSEL' 
-  | 'CONTRACT' 
-  | 'MARKET_INDEX' 
-  | 'SALES_ACTIVITY'
-  | 'COMPETITOR';
+  | 'SHIPPER'           // 화주
+  | 'BOOKING'           // 부킹
+  | 'ROUTE'             // 항로
+  | 'VESSEL'            // 선박
+  | 'CONTRACT'          // 계약
+  | 'MARKET_INDEX'      // 시장지표
+  | 'SALES_ACTIVITY'    // 영업활동
+  | 'COMPETITOR'        // 경쟁사
+  | 'SHIP_OWNER'        // 선주
+  | 'PORT'              // 항만
+  | 'CARGO'             // 화물
+  | 'TERMINAL'          // 터미널
+  | 'FREIGHT_FORWARDER' // 포워더
+  | 'INSURANCE'         // 보험
+  | 'CUSTOMS';          // 관세청
 
 export interface GraphNode {
   id: string;
