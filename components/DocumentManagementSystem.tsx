@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { 
   Upload, FileText, Search, Download, Eye, 
   Edit3, Trash2, Share2, Lock, Camera,
-  FileImage, FileSpreadsheet, FilePdf,
+  FileImage, FileSpreadsheet, File,
   CheckCircle, Shield, Scan
 } from 'lucide-react';
 
@@ -186,7 +186,7 @@ const DocumentManagementSystem: React.FC<DocumentManagementSystemProps> = ({ lan
   const getFileIcon = (filename: string) => {
     const ext = filename.split('.').pop()?.toLowerCase();
     switch (ext) {
-      case 'pdf': return <FilePdf className="w-5 h-5 text-red-500" />;
+      case 'pdf': return <File className="w-5 h-5 text-red-500" />;
       case 'xlsx': case 'xls': return <FileSpreadsheet className="w-5 h-5 text-green-500" />;
       case 'jpg': case 'jpeg': case 'png': return <FileImage className="w-5 h-5 text-blue-500" />;
       default: return <FileText className="w-5 h-5 text-gray-500" />;
