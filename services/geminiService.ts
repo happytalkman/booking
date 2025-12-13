@@ -4,9 +4,9 @@ import { openRouterService } from "./openRouterService";
 
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-const ai = apiKey && apiKey !== 'PLACEHOLDER_API_KEY' ? new GoogleGenAI({ apiKey }) : null;
+const ai = apiKey && apiKey !== 'your_actual_gemini_api_key_here' && apiKey.length > 10 ? new GoogleGenAI({ apiKey }) : null;
 
-export const fetchMarketInsights = async (query: string): Promise<MarketInsight> => {
+export const fetchMarketInsights = async (query: string, lang: 'ko' | 'en' = 'ko'): Promise<MarketInsight> => {
   // 1순위: OpenRouter (멀티 LLM)
   if (openRouterService.isConfigured()) {
     console.log('Using OpenRouter for market insights');
@@ -42,7 +42,7 @@ export const fetchMarketInsights = async (query: string): Promise<MarketInsight>
       const uniqueSources = Array.from(new Map(sources.map((s: any) => [s.uri, s])).values()) as { uri: string; title: string }[];
 
       return {
-        title: "실시간 시장 분석",
+        title: lang === 'ko' ? "실시간 시장 분석" : "Real-time Market Analysis",
         content: text,
         sources: uniqueSources
       };

@@ -1,7 +1,7 @@
 {
   "name": "KMTC 온톨로지 기반 부킹 플랫폼",
-  "short_name": "KMTC Booking",
-  "description": "AI 기반 해운 물류 부킹 예측 및 최적화 시스템",
+  "short_name": "KMTC Platform",
+  "description": "AI 기반 해운 물류 부킹 예측 및 최적화 시스템 - 문서관리, 모바일 기능, 실시간 데이터 통합",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -74,25 +74,37 @@
   ],
   "shortcuts": [
     {
-      "name": "새 부킹",
-      "short_name": "부킹",
-      "description": "새로운 부킹을 생성합니다",
-      "url": "/booking/new",
+      "name": "문서 관리",
+      "short_name": "문서",
+      "description": "선하증권, 송장 등 문서를 관리합니다",
+      "url": "/?tab=document-management",
       "icons": [
         {
-          "src": "/icons/shortcut-booking.png",
+          "src": "/icons/shortcut-documents.png",
           "sizes": "96x96"
         }
       ]
     },
     {
-      "name": "알림 확인",
-      "short_name": "알림",
-      "description": "실시간 알림을 확인합니다",
-      "url": "/notifications",
+      "name": "실시간 데이터",
+      "short_name": "데이터",
+      "description": "환율, 유가, 날씨 등 실시간 정보를 확인합니다",
+      "url": "/?tab=real-time-data",
       "icons": [
         {
-          "src": "/icons/shortcut-notifications.png",
+          "src": "/icons/shortcut-data.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "모바일 기능",
+      "short_name": "모바일",
+      "description": "카메라 스캔, GPS, 생체인증 등 모바일 기능을 사용합니다",
+      "url": "/?tab=mobile-features",
+      "icons": [
+        {
+          "src": "/icons/shortcut-mobile.png",
           "sizes": "96x96"
         }
       ]
@@ -101,7 +113,7 @@
       "name": "AI 챗봇",
       "short_name": "AI",
       "description": "AI 어시스턴트와 대화합니다",
-      "url": "/chat",
+      "url": "/",
       "icons": [
         {
           "src": "/icons/shortcut-ai.png",

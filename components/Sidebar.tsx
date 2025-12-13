@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Network, LineChart, AlertTriangle, Ship, Home, Package, Settings, ChevronLeft, ChevronRight, Briefcase, Database, Zap, Users, Play } from 'lucide-react';
+import { LayoutDashboard, Network, LineChart, AlertTriangle, Ship, Home, Package, Settings, ChevronLeft, ChevronRight, Briefcase, Database, Zap, Users, Play, FileText, Smartphone, Globe } from 'lucide-react';
 import { Language } from '../types';
 
 interface SidebarProps {
@@ -36,6 +36,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, lang, isOpen
     { id: 'booking-history', label: lang === 'ko' ? '부킹 히스토리' : 'Booking History', icon: Database },
     { id: 'auto-booking', label: lang === 'ko' ? '자동 부킹' : 'Auto Booking', icon: Zap },
     { id: 'collaboration', label: lang === 'ko' ? '협업 센터' : 'Collaboration', icon: Users },
+    { id: 'document-management', label: lang === 'ko' ? '문서 관리' : 'Document Management', icon: FileText },
+    { id: 'mobile-features', label: lang === 'ko' ? '모바일 기능' : 'Mobile Features', icon: Smartphone },
+    { id: 'real-time-data', label: lang === 'ko' ? '실시간 데이터' : 'Real-Time Data', icon: Globe },
     { id: 'simulation', label: lang === 'ko' ? '시뮬레이션 센터' : 'Simulation Center', icon: Play },
     { id: 'scenarios', label: translations.scenarios[lang], icon: Briefcase },
     { id: 'risk', label: translations.risk[lang], icon: AlertTriangle },

@@ -11,6 +11,9 @@ import MarketIntel from './pages/MarketIntel';
 import Scenarios from './pages/Scenarios';
 import OntologyToolsPage from './pages/OntologyToolsPage';
 import SimulationCenter from './pages/SimulationCenter';
+import DocumentManagement from './pages/DocumentManagement';
+import MobileFeatures from './pages/MobileFeatures';
+import RealTimeData from './pages/RealTimeData';
 import AIChatAssistant from './components/AIChatAssistant';
 import BookmarksPanel from './components/BookmarksPanel';
 import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
@@ -25,6 +28,10 @@ import SmartReportGenerator from './components/SmartReportGenerator';
 import RealEmotionDetection from './components/RealEmotionDetection';
 import SmartNotificationCenter from './components/SmartNotificationCenter';
 import AdvancedAnalyticsDashboard from './components/AdvancedAnalyticsDashboard';
+import SecurityDashboardButton from './components/SecurityDashboardButton';
+import MultimodalAIButton from './components/MultimodalAIButton';
+import AdvancedPredictionButton from './components/AdvancedPredictionButton';
+import SmartRecommendationButton from './components/SmartRecommendationButton';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { pwaService } from './services/pwaService';
@@ -142,6 +149,9 @@ const AppContent: React.FC = () => {
       case 'booking-history': return <BookingHistoryDashboard lang={language} />;
       case 'auto-booking': return <AutoBookingEngine lang={language} />;
       case 'collaboration': return <CollaborationPanel lang={language} />;
+      case 'document-management': return <DocumentManagement lang={language} />;
+      case 'mobile-features': return <MobileFeatures lang={language} />;
+      case 'real-time-data': return <RealTimeData lang={language} />;
       case 'simulation': return <SimulationCenter />;
       case 'risk': return <RiskAnalysis lang={language} />;
       case 'inventory': return <Inventory lang={language} />;
@@ -161,6 +171,9 @@ const AppContent: React.FC = () => {
       'booking-history': { ko: '부킹 히스토리', en: 'Booking History' },
       'auto-booking': { ko: '자동 부킹', en: 'Auto Booking' },
       collaboration: { ko: '협업 센터', en: 'Collaboration' },
+      'document-management': { ko: '문서 관리 시스템', en: 'Document Management' },
+      'mobile-features': { ko: '모바일 고급 기능', en: 'Mobile Features' },
+      'real-time-data': { ko: '실시간 데이터', en: 'Real-Time Data' },
       simulation: { ko: '시뮬레이션 센터', en: 'Simulation Center' },
       risk: { ko: '리스크 분석', en: 'Risk Analysis' },
       inventory: { ko: '재고 관리', en: 'Inventory' },
@@ -230,6 +243,18 @@ const AppContent: React.FC = () => {
                   <div className="relative">
                     <AdvancedAnalyticsDashboard lang={language} />
                   </div>
+
+                  {/* Security Dashboard */}
+                  <SecurityDashboardButton lang={language} />
+
+                  {/* Multimodal AI Assistant */}
+                  <MultimodalAIButton lang={language} />
+
+                  {/* Advanced Prediction Engine */}
+                  <AdvancedPredictionButton lang={language} />
+
+                  {/* Smart Recommendation Center */}
+                  <SmartRecommendationButton lang={language} />
 
                   {/* Refresh Button */}
                   <button

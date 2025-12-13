@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMTC 플랫폼 - 오프라인</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 500px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto 2rem;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .features {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .features h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .features ul {
+            list-style: none;
+        }
+        
+        .features li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .features li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        .retry-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .status.online {
+            background: rgba(16, 185, 129, 0.2);
+            border-left-color: #10b981;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">K</div>
+        <h1>KMTC 플랫폼</h1>
+        <p>현재 오프라인 상태입니다.<br>인터넷 연결을 확인해주세요.</p>
+        
+        <div class="features">
+            <h3>🚀 오프라인에서도 사용 가능한 기능:</h3>
+            <ul>
+                <li>캐시된 부킹 데이터 조회</li>
+                <li>저장된 문서 보기</li>
+                <li>오프라인 계산기</li>
+                <li>즐겨찾기 항목</li>
+                <li>사용자 설정</li>
+            </ul>
+        </div>
+        
+        <div id="status" class="status">
+            <strong>🔴 오프라인</strong><br>
+            네트워크 연결을 확인하고 다시 시도해주세요.
+        </div>
+        
+        <button class="retry-btn" onclick="checkConnection()">
+            <span id="retry-text">🔄 다시 연결</span>
+        </button>
+    </div>
+
+    <script>
+        let isChecking = false;
+        
+        function checkConnection() {
+            if (isChecking) return;
+            
+            isChecking = true;
+            const retryBtn = document.querySelector('.retry-btn');
+            const retryText = document.getElementById('retry-text');
+            const status = document.getElementById('status');
+            
+            retryText.textContent = '🔄 연결 확인 중...';
+            retryBtn.classList.add('pulse');
+            
+            // 네트워크 상태 확인
+            if (navigator.onLine) {
+                // 실제 서버 연결 테스트
+                fetch('/', { method: 'HEAD', cache: 'no-cache' })
+                    .then(() => {
+                        status.innerHTML = '<strong>🟢 온라인</strong><br>연결이 복구되었습니다. 페이지를 새로고침합니다.';
+                        status.className = 'status online';
+                        retryText.textContent = '✅ 연결됨';
+                        
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    })
+                    .catch(() => {
+                        resetRetryButton();
+                    });
+            } else {
+                resetRetryButton();
+            }
+        }
+        
+        function resetRetryButton() {
+            const retryBtn = document.querySelector('.retry-btn');
+            const retryText = document.getElementById('retry-text');
+            
+            retryText.textContent = '🔄 다시 연결';
+            retryBtn.classList.remove('pulse');
+            isChecking = false;
+        }
+        
+        // 온라인 상태 자동 감지
+        window.addEventListener('online', () => {
+            checkConnection();
+        });
+        
+        window.addEventListener('offline', () => {
+            const status = document.getElementById('status');
+            status.innerHTML = '<strong>🔴 오프라인</strong><br>네트워크 연결이 끊어졌습니다.';
+            status.className = 'status';
+        });
+        
+        // 주기적 연결 확인 (30초마다)
+        setInterval(() => {
+            if (navigator.onLine && !isChecking) {
+                fetch('/', { method: 'HEAD', cache: 'no-cache' })
+                    .then(() => {
+                        checkConnection();
+                    })
+                    .catch(() => {
+                        // 연결 실패 시 아무것도 하지 않음
+                    });
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

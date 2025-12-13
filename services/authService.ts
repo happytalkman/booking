@@ -10,8 +10,10 @@ interface UserProfile {
   lastLogin: string;
 }
 
-// API 기본 URL
-const API_URL = import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3001';
+// API 기본 URL (프로덕션에서는 HTTPS 사용)
+const API_URL = import.meta.env.VITE_AUTH_API_URL || (
+  import.meta.env.PROD ? 'https://api.kmtc.co.kr' : 'http://localhost:3001'
+);
 
 // 자동 로그인 허용 이메일 목록
 const AUTO_LOGIN_EMAILS = ['happytalkman@webig.ai'];
@@ -37,13 +39,16 @@ export const autoLogin = (email: string): {
     lastLogin: new Date().toISOString()
   };
 
-  const token = btoa(JSON.stringify({
+  // 보안 강화: 실제 환경에서는 서버에서 JWT 토큰 생성 필요
+  const tokenPayload = {
     email: user.email,
     role: user.role,
     name: user.name,
     iat: Date.now(),
-    exp: Date.now() + 24 * 60 * 60 * 1000
-  }));
+    exp: Date.now() + (8 * 60 * 60 * 1000) // 8시간으로 단축
+  };
+  
+  const token = btoa(JSON.stringify(tokenPayload));
 
   // 감사 로그 기록
   logAuditEvent({

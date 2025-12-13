@@ -140,22 +140,25 @@ class OpenRouterService {
       );
 
       return {
-        title: '실시간 시장 분석',
+        title: lang === 'ko' ? '실시간 시장 분석' : 'Real-time Market Analysis',
         content,
         sources: [] // OpenRouter doesn't provide grounding by default
       };
     } catch (error) {
       console.error('Market analysis error:', error);
       return {
-        title: '데이터 가져오기 오류',
-        content: '지금은 시장 인사이트를 가져올 수 없습니다. 나중에 다시 시도해주세요.',
+        title: lang === 'ko' ? '데이터 가져오기 오류' : 'Data Fetch Error',
+        content: lang === 'ko' ? '지금은 시장 인사이트를 가져올 수 없습니다. 나중에 다시 시도해주세요.' : 'Unable to fetch market insights at the moment. Please try again later.',
         sources: []
       };
     }
   }
 
   isConfigured(): boolean {
-    return !!this.apiKey && this.apiKey !== 'your_openrouter_api_key_here';
+    return !!this.apiKey && 
+           this.apiKey !== 'your_openrouter_api_key_here' && 
+           this.apiKey !== 'your_actual_openrouter_api_key_here' &&
+           this.apiKey.length > 10;
   }
 }
 
