@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X, TrendingDown, AlertTriangle, Ship, DollarSign, Clock, CheckCircle, Settings, History } from 'lucide-react';
+import { Bell, X, TrendingDown, AlertTriangle, Ship, DollarSign, Clock, CheckCircle2 as CheckCircle, Settings, History } from 'lucide-react';
 import { Language } from '../types';
 import SmartNotificationSettings from './SmartNotificationSettings';
 import NotificationHistory from './NotificationHistory';

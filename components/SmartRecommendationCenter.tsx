@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, TrendingUp, Clock, DollarSign, Shield, Zap, 
-  BookOpen, CheckCircle, XCircle, ThumbsUp, ThumbsDown,
+  BookOpen, CheckCircle2 as CheckCircle, XCircle, ThumbsUp, ThumbsDown,
   AlertTriangle, Target, Lightbulb, ArrowRight, Star,
   Calendar, MapPin, TrendingDown, Award, X
 } from 'lucide-react';

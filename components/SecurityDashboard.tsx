@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, AlertTriangle, CheckCircle, XCircle, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { Shield, AlertTriangle, CheckCircle2 as CheckCircle, XCircle, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { securityService } from '../services/securityService';
 import { Language } from '../types';
 

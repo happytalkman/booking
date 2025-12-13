@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Download, Mail, Calendar, Settings, Plus, Trash2, Eye, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { FileText, Download, Mail, Calendar, Settings, Plus, Trash2, Eye, Clock, CheckCircle2 as CheckCircle, AlertCircle } from 'lucide-react';
 import { reportService, ReportTemplate, GeneratedReport } from '../services/reportService';
 
 interface SmartReportGeneratorProps {

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, TrendingUp, TrendingDown, AlertTriangle, Lightbulb, ChevronRight, X, CheckCircle, Loader, ArrowRight, Download, FileText, FileJson, FileSpreadsheet } from 'lucide-react';
+import { Sparkles, TrendingUp, TrendingDown, AlertTriangle, Lightbulb, ChevronRight, X, CheckCircle2 as CheckCircle, Loader, ArrowRight, Download, FileText, FileJson, FileSpreadsheet } from 'lucide-react';
 import { actionService, ActionResult } from '../services/actionService';
 import { reportService } from '../services/reportService';
 import { Language } from '../types';

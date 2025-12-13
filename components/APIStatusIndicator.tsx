@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, Clock, Wifi, WifiOff } from 'lucide-react';
+import { CheckCircle2 as CheckCircle, XCircle, Clock, Wifi, WifiOff } from 'lucide-react';
 
 interface APIStatus {
   name: string;

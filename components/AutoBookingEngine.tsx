@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Plus, Settings, Play, Pause, AlertTriangle, CheckCircle, Clock, TrendingDown, DollarSign, X, Edit, Trash2, Eye } from 'lucide-react';
+import { Zap, Plus, Settings, Play, Pause, AlertTriangle, CheckCircle2 as CheckCircle, Clock, TrendingDown, DollarSign, X, Edit, Trash2, Eye } from 'lucide-react';
 import { Language } from '../types';
 
 interface AutoBookingRule {

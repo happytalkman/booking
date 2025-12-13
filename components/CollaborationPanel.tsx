@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, MessageCircle, Share2, ThumbsUp, Clock, Send, Plus, Filter, Bell, CheckCircle, X } from 'lucide-react';
+import { Users, MessageCircle, Share2, ThumbsUp, Clock, Send, Plus, Filter, Bell, CheckCircle2 as CheckCircle, X } from 'lucide-react';
 import { Language } from '../types';
 
 interface Comment {

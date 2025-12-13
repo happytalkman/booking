@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { X, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, BarChart3, PieChart, Calendar } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2 as CheckCircle, BarChart3, PieChart, Calendar } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RePieChart, Pie, Cell } from 'recharts';
 
 interface KPIDetailModalProps {

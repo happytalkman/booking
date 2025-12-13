@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, TrendingUp, TrendingDown, Target, Zap, BarChart3, Clock, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { Brain, TrendingUp, TrendingDown, Target, Zap, BarChart3, Clock, CheckCircle2 as CheckCircle, AlertCircle, X } from 'lucide-react';
 import { aiLearningService, ModelComparison, OnlineLearningMetrics, SeasonalPattern } from '../services/aiLearningService';
 
 interface AILearningDashboardProps {

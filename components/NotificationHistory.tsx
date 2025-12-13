@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { History, Filter, Download, TrendingUp, Bell, Clock, CheckCircle, X, Calendar, BarChart3 } from 'lucide-react';
+import { History, Filter, Download, TrendingUp, Bell, Clock, CheckCircle2 as CheckCircle, X, Calendar, BarChart3 } from 'lucide-react';
 import { Language } from '../types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 

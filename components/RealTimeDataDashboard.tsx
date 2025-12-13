@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Minus, Wifi, WifiOff,
   DollarSign, Fuel, Anchor, Cloud, Thermometer,
-  Wind, Eye, Clock, AlertTriangle, CheckCircle,
+  Wind, Eye, Clock, AlertTriangle, CheckCircle2 as CheckCircle,
   RefreshCw, Globe, Ship, MapPin
 } from 'lucide-react';
 import { realTimeDataService } from '../services/realTimeDataService';

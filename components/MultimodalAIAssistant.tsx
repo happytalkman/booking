@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { 
   Mic, MicOff, Camera, Upload, Send, Volume2, VolumeX, 
   Brain, Zap, FileText, Image as ImageIcon, MessageSquare,
-  Loader, CheckCircle, AlertCircle, X
+  Loader, CheckCircle2 as CheckCircle, AlertCircle, X
 } from 'lucide-react';
 import { multimodalAIService } from '../services/multimodalAIService';
 import { Language } from '../types';

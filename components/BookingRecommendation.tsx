@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown, Clock, DollarSign, AlertCircle, CheckCircle, Sparkles, ChevronRight, X } from 'lucide-react';
+import { TrendingUp, TrendingDown, Clock, DollarSign, AlertCircle, CheckCircle2 as CheckCircle, Sparkles, ChevronRight, X } from 'lucide-react';
 import { Language } from '../types';
 
 interface Recommendation {

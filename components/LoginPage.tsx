@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, ArrowRight, Shield, CheckCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Shield, CheckCircle2 as CheckCircle } from 'lucide-react';
 
 interface LoginPageProps {
   onLoginSuccess: (email: string, role: string) => void;

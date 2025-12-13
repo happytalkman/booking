@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X, Check, Settings, AlertTriangle, Info, AlertCircle, CheckCircle, Volume2, VolumeX } from 'lucide-react';
+import { Bell, X, Check, Settings, AlertTriangle, Info, AlertCircle, CheckCircle2 as CheckCircle, Volume2, VolumeX } from 'lucide-react';
 import { alertService, Alert, AlertRule } from '../services/alertService';
 
 interface RealTimeAlertPanelProps {

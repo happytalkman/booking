@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, BarChart3, PieChart, LineChart } from 'lucide-react';
+import { Download, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2 as CheckCircle, BarChart3, PieChart, LineChart } from 'lucide-react';
 import { Language } from '../types';
 
 interface ProfessionalMarketReportProps {

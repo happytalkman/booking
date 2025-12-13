@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, TrendingUp, Link, AlertCircle, CheckCircle, XCircle, Lightbulb } from 'lucide-react';
+import { Sparkles, TrendingUp, Link, AlertCircle, CheckCircle2 as CheckCircle, XCircle, Lightbulb } from 'lucide-react';
 import { Language } from '../types';
 
 interface OntologyRecommendationEngineProps {
